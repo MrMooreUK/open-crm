@@ -18,6 +18,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { moveDeal } from "@/lib/actions/deals";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 type DealCard = {
   id: string;
@@ -26,6 +27,7 @@ type DealCard = {
   currency: string;
   stageId: string;
   company: { id: string; name: string } | null;
+  owner: { id: string; name: string; image: string | null } | null;
 };
 
 type StageCol = {
@@ -67,17 +69,30 @@ function DealItem({
         isDragging && "opacity-40"
       )}
     >
-      <Link
-        href={`/deals/${deal.id}`}
-        onClick={(e) => e.stopPropagation()}
-        className="text-sm font-medium text-zinc-900 hover:underline"
-      >
-        {deal.title}
-      </Link>
-      <div className="mt-1 text-xs text-zinc-500">
-        {deal.company?.name ?? "No company"}
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <Link
+            href={`/deals/${deal.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-medium text-zinc-900 hover:underline"
+          >
+            {deal.title}
+          </Link>
+          <div className="mt-1 text-xs text-zinc-500">
+            {deal.company?.name ?? "No company"}
+          </div>
+        </div>
+        {deal.owner ? (
+          <UserAvatar
+            name={deal.owner.name}
+            image={deal.owner.image}
+            size="xs"
+            title={`Assigned to ${deal.owner.name}`}
+            className="mt-0.5"
+          />
+        ) : null}
       </div>
-      <div className="mt-1 text-xs font-medium text-zinc-700">
+      <div className="mt-1.5 text-xs font-medium text-zinc-700">
         {formatCurrency(deal.amountCents, deal.currency, locale)}
       </div>
     </div>
@@ -226,7 +241,18 @@ export function KanbanBoard({
       <DragOverlay>
         {activeDeal ? (
           <div className="w-60 rounded-md border border-zinc-300 bg-white p-2.5 shadow-lg">
-            <div className="text-sm font-medium">{activeDeal.title}</div>
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1 text-sm font-medium">
+                {activeDeal.title}
+              </div>
+              {activeDeal.owner ? (
+                <UserAvatar
+                  name={activeDeal.owner.name}
+                  image={activeDeal.owner.image}
+                  size="xs"
+                />
+              ) : null}
+            </div>
             <div className="mt-1 text-xs text-zinc-500">
               {formatCurrency(activeDeal.amountCents, activeDeal.currency)}
             </div>

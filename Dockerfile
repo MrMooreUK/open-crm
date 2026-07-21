@@ -43,6 +43,10 @@ COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 
+# Uploads dir (logos, avatars); compose mounts a volume here — never bake user files into the image
+RUN mkdir -p public/uploads/logos public/uploads/avatars \
+  && chown -R nextjs:nodejs public/uploads
+
 USER nextjs
 EXPOSE 3000
 

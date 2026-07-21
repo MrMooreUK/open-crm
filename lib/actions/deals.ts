@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, desc, eq, ilike } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { deals, pipelines, stages } from "@/lib/db/schema";
@@ -22,6 +22,7 @@ export async function listDeals(query?: string) {
       stage: true,
       company: true,
       contact: true,
+      owner: true,
     },
   });
 }
@@ -34,6 +35,9 @@ export async function getDeal(id: string) {
       stage: true,
       company: true,
       contact: true,
+      owner: true,
+      quotes: true,
+      enquiries: true,
     },
   });
 }
@@ -65,6 +69,7 @@ export async function getPipelineBoard() {
       company: true,
       contact: true,
       stage: true,
+      owner: true,
     },
     orderBy: [desc(deals.updatedAt)],
   });
@@ -80,6 +85,7 @@ export async function getPipelineBoard() {
 
 export async function createDeal(formData: FormData) {
   const { organizationId, user } = await requireMembership();
+  const { resolveAssigneeId } = await import("@/lib/team");
   const parsed = dealSchema.safeParse({
     title: formData.get("title"),
     amount: formData.get("amount") || 0,
@@ -89,6 +95,7 @@ export async function createDeal(formData: FormData) {
     contactId: formData.get("contactId") || "",
     expectedCloseAt: formData.get("expectedCloseAt") || "",
     notes: formData.get("notes") || "",
+    ownerId: formData.get("ownerId") || "",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -106,6 +113,11 @@ export async function createDeal(formData: FormData) {
 
   const id = createId("deal");
   const amountCents = Math.round(Number(parsed.data.amount) * 100);
+  const ownerId = await resolveAssigneeId(
+    organizationId,
+    parsed.data.ownerId || user.id,
+    user.id
+  );
 
   await db.insert(deals).values({
     id,
@@ -120,7 +132,7 @@ export async function createDeal(formData: FormData) {
       ? new Date(parsed.data.expectedCloseAt)
       : null,
     notes: parsed.data.notes || null,
-    ownerId: user.id,
+    ownerId,
   });
 
   revalidatePath("/deals");
@@ -130,7 +142,8 @@ export async function createDeal(formData: FormData) {
 }
 
 export async function updateDeal(id: string, formData: FormData) {
-  const { organizationId } = await requireMembership();
+  const { organizationId, user } = await requireMembership();
+  const { resolveAssigneeId } = await import("@/lib/team");
   const parsed = dealSchema.safeParse({
     title: formData.get("title"),
     amount: formData.get("amount") || 0,
@@ -140,6 +153,7 @@ export async function updateDeal(id: string, formData: FormData) {
     contactId: formData.get("contactId") || "",
     expectedCloseAt: formData.get("expectedCloseAt") || "",
     notes: formData.get("notes") || "",
+    ownerId: formData.get("ownerId") || "",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -156,6 +170,11 @@ export async function updateDeal(id: string, formData: FormData) {
   if ("error" in links) return links;
 
   const amountCents = Math.round(Number(parsed.data.amount) * 100);
+  const ownerId = await resolveAssigneeId(
+    organizationId,
+    parsed.data.ownerId || null,
+    user.id
+  );
 
   await db
     .update(deals)
@@ -170,6 +189,7 @@ export async function updateDeal(id: string, formData: FormData) {
         ? new Date(parsed.data.expectedCloseAt)
         : null,
       notes: parsed.data.notes || null,
+      ownerId,
       updatedAt: new Date(),
     })
     .where(and(eq(deals.id, id), eq(deals.organizationId, organizationId)));
@@ -207,4 +227,21 @@ export async function deleteDeal(id: string) {
   revalidatePath("/pipeline");
   revalidatePath("/");
   return { ok: true };
+}
+
+export async function deleteDeals(ids: string[]) {
+  const { organizationId } = await requireMembership();
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return { error: "Nothing selected" };
+
+  await db
+    .delete(deals)
+    .where(
+      and(eq(deals.organizationId, organizationId), inArray(deals.id, unique))
+    );
+
+  revalidatePath("/deals");
+  revalidatePath("/pipeline");
+  revalidatePath("/");
+  return { ok: true as const, deleted: unique.length };
 }

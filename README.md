@@ -26,26 +26,29 @@ Built for **founders, sales pods, and agencies** (roughly 1–50 people).
 
 ## Features
 
-- **Companies & contacts** — CRUD, linked records, quick-add contacts with search-or-create company
-- **Deals & pipeline** — list view + Kanban board with drag-and-drop stage moves
-- **Activities** — notes, calls, emails, meetings, and tasks on any record
-- **Tasks** — open-task list with one-click complete
-- **Search** — global search across companies, contacts, and deals
-- **Dashboard** — open deals, pipeline value, tasks, recent activity
-- **Team** — invite links, owner / member roles
-- **Regional settings** — timezone, default currency, locale, date format, fiscal year
-- **API-friendly** — health check, session auth, REST under `/api/v1`
+- **Companies & contacts** — linked records, quick-add, search-or-create company
+- **Import / export** — contacts as CSV, TSV, JSON, vCard, or Excel
+- **Enquiries** — inbound requests, status workflow, teammate assignment
+- **Quotes** — line items, tax, service catalog, print/PDF
+- **Services** — reusable priced offerings for one-click quote lines
+- **Deals & pipeline** — list view + Kanban with drag-and-drop; assignee avatars
+- **Activities & tasks** — notes, calls, emails, meetings; open-task list
+- **Data tables** — filters, column show/hide/reorder, bulk select & delete
+- **Company → contact filtering** — pick a company, only see its people
+- **Search & dashboard** — global search; pipeline value and recent activity
+- **Notifications** — red badge when new enquiries need attention
+- **Account settings** — profile photo upload, password, active sessions
+- **Organization settings** — profile, branding/logo, regional defaults, team invites
 - **One-command install** — Docker Compose (app + Postgres)
 
 ### Roadmap (near term)
 
-- CSV import / export  
 - Webhooks & API tokens  
 - Custom fields  
 - Basic automation rules  
 - Deeper reporting  
 
-See [docs/roadmap.md](./docs/roadmap.md) for the full plan.
+See [docs/roadmap.md](./docs/roadmap.md). Contact I/O: [docs/contacts-import-export.md](./docs/contacts-import-export.md).
 
 ---
 
@@ -56,15 +59,19 @@ See [docs/roadmap.md](./docs/roadmap.md) for the full plan.
 ```bash
 git clone https://github.com/MrMooreUK/open-crm.git
 cd open-crm
+cp .env.example .env
+# Production: set BETTER_AUTH_SECRET and public URLs in .env first
 docker compose up -d
 ```
 
 Open **http://localhost:3000**, register, and create your workspace.
 
-> **Production:** set a strong secret before going live:
+> **Production:** always set a strong secret and real public URL:
 >
 > ```bash
-> echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" > .env
+> cp .env.example .env
+> # edit BETTER_AUTH_SECRET=$(openssl rand -base64 32)
+> # edit BETTER_AUTH_URL / APP_URL to https://crm.example.com
 > docker compose up -d
 > ```
 
@@ -137,12 +144,13 @@ open-crm/
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | yes | Postgres connection string |
-| `BETTER_AUTH_SECRET` | yes (prod) | Session signing secret (32+ chars) |
-| `BETTER_AUTH_URL` | yes | Public app URL |
+| `DATABASE_URL` | yes (dev / host tools) | Postgres connection string |
+| `BETTER_AUTH_SECRET` | **yes in production** | Session signing secret (32+ chars) |
+| `BETTER_AUTH_URL` | yes | Public app URL (browser origin) |
 | `APP_URL` | yes | Same as above for redirects |
+| `POSTGRES_PASSWORD` | optional | Compose DB password (default `opencrm` for local demos only) |
 
-Defaults for local Docker are in `docker-compose.yml`. Full list: [`.env.example`](./.env.example).
+**Never commit `.env`.** Only [`.env.example`](./.env.example) is tracked. See [SECURITY.md](./SECURITY.md).
 
 ---
 
@@ -152,7 +160,7 @@ Defaults for local Docker are in `docker-compose.yml`. Full list: [`.env.example
 |---------|---------|
 | `npm run dev` | Dev server (http://localhost:3000) |
 | `npm run build` / `start` | Production build & server |
-| `npm run lint` | ESLint |
+| `npm run lint` / `typecheck` | ESLint / TypeScript |
 | `npm run db:generate` | Generate Drizzle migrations |
 | `npm run db:migrate` | Apply migrations |
 | `npm run db:seed` | Load demo data |
@@ -165,7 +173,8 @@ Defaults for local Docker are in `docker-compose.yml`. Full list: [`.env.example
 | Endpoint | Description |
 |----------|-------------|
 | `GET /api/health` | Liveness + database ping |
-| `GET /api/v1/me` | Current user + organization |
+| `GET /api/v1/me` | Current user + organization (session) |
+| `GET /api/v1/contacts/export` | Contact export (session) |
 | `/api/auth/*` | Better Auth (register, login, session) |
 
 See [docs/api.md](./docs/api.md).
@@ -185,16 +194,18 @@ Please follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 ### Good first contributions
 
 - Empty-state copy and accessibility  
-- CSV import for contacts  
+- Screenshots under `docs/images/`  
 - Keyboard shortcuts on the pipeline  
 - Tests for domain helpers / server actions  
-- Screenshots and docs examples  
+- Company import/export (mirroring contacts)  
 
 ---
 
 ## Security
 
 Please **do not** open public issues for vulnerabilities. See [SECURITY.md](./SECURITY.md).
+
+Self-host checklist: strong `BETTER_AUTH_SECRET`, HTTPS public URL, keep Postgres off the public internet, never commit secrets or upload folders.
 
 ---
 

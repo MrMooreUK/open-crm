@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { listContacts } from "@/lib/actions/contacts";
 import { listCompanies } from "@/lib/actions/companies";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
-import { fullName } from "@/lib/utils";
 import { QuickAddContactButton } from "@/components/contacts/quick-add-contact";
+import { ContactImportExport } from "@/components/contacts/contact-import-export";
+import { ContactsTable } from "@/components/contacts/contacts-table";
 
 export default async function ContactsPage() {
-  const [contacts, companies] = await Promise.all([
+  const [{ organization }, contacts, companies] = await Promise.all([
+    requireMembership(),
     listContacts(),
     listCompanies(),
   ]);
@@ -17,16 +20,23 @@ export default async function ContactsPage() {
     domain: c.domain,
   }));
 
+  const fmt = {
+    locale: organization.locale,
+    timezone: organization.timezone,
+    dateFormat: organization.dateFormat,
+  };
+
   return (
     <div>
       <PageHeader
         title="Contacts"
         description={`${contacts.length} total`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <ContactImportExport />
             <Link
               href="/contacts/new"
-              className="inline-flex h-9 items-center rounded-md border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+              className="inline-flex h-8 items-center rounded-md border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
             >
               Full form
             </Link>
@@ -39,53 +49,15 @@ export default async function ContactsPage() {
         <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50/50 px-6 py-16 text-center">
           <h3 className="text-sm font-medium text-zinc-900">No contacts yet</h3>
           <p className="mt-1 text-sm text-zinc-500">
-            Add a person in a few seconds — name, email, company.
+            Add a person, or import a CSV, Excel, JSON, or vCard file.
           </p>
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <ContactImportExport />
             <QuickAddContactButton companies={companyOptions} />
           </div>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-zinc-200">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 text-xs font-medium uppercase tracking-wide text-zinc-500">
-              <tr>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Email</th>
-                <th className="px-3 py-2">Company</th>
-                <th className="px-3 py-2">Title</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {contacts.map((c) => (
-                <tr key={c.id} className="hover:bg-zinc-50/80">
-                  <td className="px-3 py-2.5">
-                    <Link
-                      href={`/contacts/${c.id}`}
-                      className="font-medium text-zinc-900 hover:underline"
-                    >
-                      {fullName(c.firstName, c.lastName)}
-                    </Link>
-                  </td>
-                  <td className="px-3 py-2.5 text-zinc-600">{c.email || "—"}</td>
-                  <td className="px-3 py-2.5 text-zinc-600">
-                    {c.company ? (
-                      <Link
-                        href={`/companies/${c.company.id}`}
-                        className="hover:underline"
-                      >
-                        {c.company.name}
-                      </Link>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-3 py-2.5 text-zinc-600">{c.title || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ContactsTable contacts={contacts} formatOpts={fmt} />
       )}
     </div>
   );

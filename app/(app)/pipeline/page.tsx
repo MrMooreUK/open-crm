@@ -50,6 +50,13 @@ export default async function PipelinePage() {
             company: d.company
               ? { id: d.company.id, name: d.company.name }
               : null,
+            owner: d.owner
+              ? {
+                  id: d.owner.id,
+                  name: d.owner.name,
+                  image: d.owner.image ?? null,
+                }
+              : null,
           })),
         }))}
       />

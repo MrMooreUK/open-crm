@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { passwordManagerIgnore } from "@/lib/password-manager";
 
 export function InviteForm() {
   const router = useRouter();
@@ -39,20 +40,31 @@ export function InviteForm() {
 
   return (
     <div className="space-y-3">
-      <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-wrap items-end gap-2"
+        {...passwordManagerIgnore}
+      >
         <div className="min-w-[200px] flex-1 space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="invite-email">Email</Label>
           <Input
-            id="email"
+            id="invite-email"
             name="email"
-            type="email"
+            type="text"
+            inputMode="email"
             required
             placeholder="teammate@company.com"
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-bwignore
+            data-form-type="other"
+            data-protonpass-ignore
           />
         </div>
         <div className="w-28 space-y-1.5">
-          <Label htmlFor="role">Role</Label>
-          <Select id="role" name="role" defaultValue="member">
+          <Label htmlFor="invite-role">Role</Label>
+          <Select id="invite-role" name="role" defaultValue="member">
             <option value="member">Member</option>
             <option value="owner">Owner</option>
           </Select>

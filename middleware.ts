@@ -34,7 +34,9 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // Do NOT exclude image extensions globally — user uploads under /uploads/*
+  // must still pass through the session cookie check.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

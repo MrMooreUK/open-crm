@@ -2,20 +2,100 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { mkdir, unlink, writeFile } from "fs/promises";
+import path from "path";
 import { db } from "@/lib/db";
 import { invites, members, organizations, user } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { getSession, requireMembership } from "@/lib/session";
-import { inviteSchema, orgSettingsSchema } from "@/lib/validations";
+import {
+  inviteSchema,
+  orgProfileSchema,
+  orgRegionalSchema,
+} from "@/lib/validations";
 
-export async function updateOrganization(formData: FormData) {
+const MAX_LOGO_BYTES = 2 * 1024 * 1024; // 2 MB
+const ALLOWED_LOGO_TYPES: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+};
+
+function emptyToNull(v: string | undefined | null) {
+  const t = (v ?? "").trim();
+  return t ? t : null;
+}
+
+function revalidateOrgSettings() {
+  revalidatePath("/settings");
+  revalidatePath("/settings/branding");
+  revalidatePath("/settings/regional");
+  revalidatePath("/settings/team");
+  revalidatePath("/");
+  revalidatePath("/deals");
+  revalidatePath("/pipeline");
+  revalidatePath("/tasks");
+  revalidatePath("/companies");
+  revalidatePath("/quotes");
+}
+
+export async function updateOrganizationProfile(formData: FormData) {
   const { organizationId, role } = await requireMembership();
   if (role !== "owner") {
     return { error: "Only owners can update organization settings" };
   }
 
-  const parsed = orgSettingsSchema.safeParse({
+  const parsed = orgProfileSchema.safeParse({
     name: formData.get("name"),
+    legalName: formData.get("legalName") || "",
+    email: formData.get("email") || "",
+    phone: formData.get("phone") || "",
+    website: formData.get("website") || "",
+    addressLine1: formData.get("addressLine1") || "",
+    addressLine2: formData.get("addressLine2") || "",
+    city: formData.get("city") || "",
+    region: formData.get("region") || "",
+    postalCode: formData.get("postalCode") || "",
+    country: formData.get("country") || "",
+    taxId: formData.get("taxId") || "",
+    quoteFooter: formData.get("quoteFooter") || "",
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  await db
+    .update(organizations)
+    .set({
+      name: parsed.data.name,
+      legalName: emptyToNull(parsed.data.legalName),
+      email: emptyToNull(parsed.data.email),
+      phone: emptyToNull(parsed.data.phone),
+      website: emptyToNull(parsed.data.website),
+      addressLine1: emptyToNull(parsed.data.addressLine1),
+      addressLine2: emptyToNull(parsed.data.addressLine2),
+      city: emptyToNull(parsed.data.city),
+      region: emptyToNull(parsed.data.region),
+      postalCode: emptyToNull(parsed.data.postalCode),
+      country: emptyToNull(parsed.data.country),
+      taxId: emptyToNull(parsed.data.taxId),
+      quoteFooter: emptyToNull(parsed.data.quoteFooter),
+      updatedAt: new Date(),
+    })
+    .where(eq(organizations.id, organizationId));
+
+  revalidateOrgSettings();
+  return { ok: true };
+}
+
+export async function updateOrganizationRegional(formData: FormData) {
+  const { organizationId, role } = await requireMembership();
+  if (role !== "owner") {
+    return { error: "Only owners can update organization settings" };
+  }
+
+  const parsed = orgRegionalSchema.safeParse({
     timezone: formData.get("timezone") || "UTC",
     currency: formData.get("currency") || "USD",
     locale: formData.get("locale") || "en-US",
@@ -30,7 +110,6 @@ export async function updateOrganization(formData: FormData) {
   await db
     .update(organizations)
     .set({
-      name: parsed.data.name,
       timezone: parsed.data.timezone,
       currency: parsed.data.currency,
       locale: parsed.data.locale,
@@ -41,12 +120,83 @@ export async function updateOrganization(formData: FormData) {
     })
     .where(eq(organizations.id, organizationId));
 
-  revalidatePath("/settings");
-  revalidatePath("/");
-  revalidatePath("/deals");
-  revalidatePath("/pipeline");
-  revalidatePath("/tasks");
-  revalidatePath("/companies");
+  revalidateOrgSettings();
+  return { ok: true };
+}
+
+export async function uploadOrganizationLogo(formData: FormData) {
+  const { organizationId, role, organization } = await requireMembership();
+  if (role !== "owner") {
+    return { error: "Only owners can update the logo" };
+  }
+
+  const file = formData.get("logo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Choose an image file" };
+  }
+  if (file.size > MAX_LOGO_BYTES) {
+    return { error: "Logo must be under 2 MB" };
+  }
+
+  const ext = ALLOWED_LOGO_TYPES[file.type];
+  if (!ext) {
+    return { error: "Use PNG, JPEG, WebP, or SVG" };
+  }
+
+  const dir = path.join(process.cwd(), "public", "uploads", "logos");
+  await mkdir(dir, { recursive: true });
+
+  // Remove previous logo if different extension
+  if (organization.logoUrl?.startsWith("/uploads/logos/")) {
+    const prev = path.join(process.cwd(), "public", organization.logoUrl);
+    try {
+      await unlink(prev);
+    } catch {
+      // ignore missing file
+    }
+  }
+
+  const filename = `${organizationId}.${ext}`;
+  const fullPath = path.join(dir, filename);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(fullPath, buffer);
+
+  // cache-bust query so browsers pick up replacements
+  const logoUrl = `/uploads/logos/${filename}?v=${Date.now()}`;
+
+  await db
+    .update(organizations)
+    .set({ logoUrl, updatedAt: new Date() })
+    .where(eq(organizations.id, organizationId));
+
+  revalidateOrgSettings();
+  revalidatePath("/quotes");
+  return { logoUrl };
+}
+
+export async function removeOrganizationLogo() {
+  const { organizationId, role, organization } = await requireMembership();
+  if (role !== "owner") {
+    return { error: "Only owners can update the logo" };
+  }
+
+  if (organization.logoUrl?.startsWith("/uploads/logos/")) {
+    const filePath = organization.logoUrl.split("?")[0];
+    const prev = path.join(process.cwd(), "public", filePath);
+    try {
+      await unlink(prev);
+    } catch {
+      // ignore
+    }
+  }
+
+  await db
+    .update(organizations)
+    .set({ logoUrl: null, updatedAt: new Date() })
+    .where(eq(organizations.id, organizationId));
+
+  revalidateOrgSettings();
+  revalidatePath("/quotes");
   return { ok: true };
 }
 

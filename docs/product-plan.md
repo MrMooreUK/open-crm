@@ -1,8 +1,9 @@
 # open-crm — Product & Technical Plan
 
-> **Note:** This is the original design document. For current status, see
-> [roadmap.md](./roadmap.md) and the root [README.md](../README.md).
-> License is **AGPL-3.0** (confirmed).
+> **Note:** This is the original design document (historical). For **current**
+> status and features, see [roadmap.md](./roadmap.md) and the root
+> [README.md](../README.md). License is **AGPL-3.0**. Quoting, enquiries, and
+> much of the “later” MVP have since shipped on `main`.
 
 **Working title:** open-crm  
 **Status:** Historical plan (MVP largely implemented)  

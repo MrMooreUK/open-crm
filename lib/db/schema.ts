@@ -80,6 +80,28 @@ export const activityTypeEnum = pgEnum("activity_type", [
   "meeting",
   "task",
 ]);
+export const enquiryStatusEnum = pgEnum("enquiry_status", [
+  "new",
+  "in_progress",
+  "quoted",
+  "won",
+  "lost",
+  "closed",
+]);
+export const enquirySourceEnum = pgEnum("enquiry_source", [
+  "web",
+  "email",
+  "phone",
+  "referral",
+  "other",
+]);
+export const quoteStatusEnum = pgEnum("quote_status", [
+  "draft",
+  "sent",
+  "accepted",
+  "rejected",
+  "expired",
+]);
 
 // ─── Organizations & membership ───────────────────────────────────────────────
 
@@ -103,6 +125,22 @@ export const organizations = pgTable(
     fiscalYearStartMonth: integer("fiscal_year_start_month")
       .notNull()
       .default(1),
+    // ── Company / branding (quotes & documents) ───────────────────────────
+    legalName: text("legal_name"),
+    email: text("email"),
+    phone: text("phone"),
+    website: text("website"),
+    addressLine1: text("address_line1"),
+    addressLine2: text("address_line2"),
+    city: text("city"),
+    region: text("region"),
+    postalCode: text("postal_code"),
+    country: text("country"),
+    taxId: text("tax_id"),
+    /** Public path e.g. /uploads/logos/org_xxx.png */
+    logoUrl: text("logo_url"),
+    /** Optional footer shown on quotes */
+    quoteFooter: text("quote_footer"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -300,6 +338,140 @@ export const activities = pgTable(
   ]
 );
 
+// ─── Enquiries & quotes ───────────────────────────────────────────────────────
+
+export const enquiries = pgTable(
+  "enquiries",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    status: enquiryStatusEnum("status").notNull().default("new"),
+    source: enquirySourceEnum("source").notNull().default("other"),
+    message: text("message"),
+    /** Denormalized when no CRM contact yet */
+    contactName: text("contact_name"),
+    contactEmail: text("contact_email"),
+    contactPhone: text("contact_phone"),
+    companyId: text("company_id").references(() => companies.id, {
+      onDelete: "set null",
+    }),
+    contactId: text("contact_id").references(() => contacts.id, {
+      onDelete: "set null",
+    }),
+    dealId: text("deal_id").references(() => deals.id, {
+      onDelete: "set null",
+    }),
+    ownerId: text("owner_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("enquiries_org_id_idx").on(t.organizationId),
+    index("enquiries_status_idx").on(t.organizationId, t.status),
+    index("enquiries_company_id_idx").on(t.companyId),
+  ]
+);
+
+export const quotes = pgTable(
+  "quotes",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    number: text("number").notNull(),
+    title: text("title").notNull(),
+    status: quoteStatusEnum("status").notNull().default("draft"),
+    currency: text("currency").notNull().default("USD"),
+    /** Tax rate as basis points, e.g. 2000 = 20% */
+    taxBps: integer("tax_bps").notNull().default(0),
+    subtotalCents: integer("subtotal_cents").notNull().default(0),
+    taxCents: integer("tax_cents").notNull().default(0),
+    totalCents: integer("total_cents").notNull().default(0),
+    validUntil: timestamp("valid_until"),
+    notes: text("notes"),
+    terms: text("terms"),
+    enquiryId: text("enquiry_id").references(() => enquiries.id, {
+      onDelete: "set null",
+    }),
+    dealId: text("deal_id").references(() => deals.id, {
+      onDelete: "set null",
+    }),
+    companyId: text("company_id").references(() => companies.id, {
+      onDelete: "set null",
+    }),
+    contactId: text("contact_id").references(() => contacts.id, {
+      onDelete: "set null",
+    }),
+    /** Bill-to snapshot for printable quotes */
+    billToName: text("bill_to_name"),
+    billToEmail: text("bill_to_email"),
+    billToCompany: text("bill_to_company"),
+    billToAddress: text("bill_to_address"),
+    createdById: text("created_by_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    sentAt: timestamp("sent_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("quotes_org_number_uidx").on(t.organizationId, t.number),
+    index("quotes_org_id_idx").on(t.organizationId),
+    index("quotes_enquiry_id_idx").on(t.enquiryId),
+    index("quotes_deal_id_idx").on(t.dealId),
+  ]
+);
+
+export const quoteItems = pgTable(
+  "quote_items",
+  {
+    id: text("id").primaryKey(),
+    quoteId: text("quote_id")
+      .notNull()
+      .references(() => quotes.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    description: text("description").notNull(),
+    /** Quantity in thousandths (1.5 → 1500) for 3 decimal places */
+    quantityMillis: integer("quantity_millis").notNull().default(1000),
+    unitPriceCents: integer("unit_price_cents").notNull().default(0),
+    amountCents: integer("amount_cents").notNull().default(0),
+    serviceId: text("service_id"),
+  },
+  (t) => [index("quote_items_quote_id_idx").on(t.quoteId)]
+);
+
+/** Catalog of sellable services with default rates (speeds up quoting) */
+export const services = pgTable(
+  "services",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    /** Default unit price in cents */
+    unitPriceCents: integer("unit_price_cents").notNull().default(0),
+    /** hour | day | item | project | month */
+    unit: text("unit").notNull().default("item"),
+    currency: text("currency").notNull().default("USD"),
+    isActive: boolean("is_active").notNull().default(true),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("services_org_id_idx").on(t.organizationId),
+    index("services_org_active_idx").on(t.organizationId, t.isActive),
+  ]
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -316,6 +488,9 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
   deals: many(deals),
   activities: many(activities),
   invites: many(invites),
+  enquiries: many(enquiries),
+  quotes: many(quotes),
+  services: many(services),
 }));
 
 export const membersRelations = relations(members, ({ one }) => ({
@@ -341,6 +516,8 @@ export const companiesRelations = relations(companies, ({ one, many }) => ({
   contacts: many(contacts),
   deals: many(deals),
   activities: many(activities),
+  enquiries: many(enquiries),
+  quotes: many(quotes),
 }));
 
 export const contactsRelations = relations(contacts, ({ one, many }) => ({
@@ -358,6 +535,8 @@ export const contactsRelations = relations(contacts, ({ one, many }) => ({
   }),
   deals: many(deals),
   activities: many(activities),
+  enquiries: many(enquiries),
+  quotes: many(quotes),
 }));
 
 export const pipelinesRelations = relations(pipelines, ({ one, many }) => ({
@@ -398,6 +577,8 @@ export const dealsRelations = relations(deals, ({ one, many }) => ({
     references: [user.id],
   }),
   activities: many(activities),
+  quotes: many(quotes),
+  enquiries: many(enquiries),
 }));
 
 export const activitiesRelations = relations(activities, ({ one }) => ({
@@ -423,6 +604,72 @@ export const activitiesRelations = relations(activities, ({ one }) => ({
   }),
 }));
 
+export const enquiriesRelations = relations(enquiries, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [enquiries.organizationId],
+    references: [organizations.id],
+  }),
+  company: one(companies, {
+    fields: [enquiries.companyId],
+    references: [companies.id],
+  }),
+  contact: one(contacts, {
+    fields: [enquiries.contactId],
+    references: [contacts.id],
+  }),
+  deal: one(deals, {
+    fields: [enquiries.dealId],
+    references: [deals.id],
+  }),
+  owner: one(user, {
+    fields: [enquiries.ownerId],
+    references: [user.id],
+  }),
+  quotes: many(quotes),
+}));
+
+export const quotesRelations = relations(quotes, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [quotes.organizationId],
+    references: [organizations.id],
+  }),
+  enquiry: one(enquiries, {
+    fields: [quotes.enquiryId],
+    references: [enquiries.id],
+  }),
+  deal: one(deals, {
+    fields: [quotes.dealId],
+    references: [deals.id],
+  }),
+  company: one(companies, {
+    fields: [quotes.companyId],
+    references: [companies.id],
+  }),
+  contact: one(contacts, {
+    fields: [quotes.contactId],
+    references: [contacts.id],
+  }),
+  createdBy: one(user, {
+    fields: [quotes.createdById],
+    references: [user.id],
+  }),
+  items: many(quoteItems),
+}));
+
+export const quoteItemsRelations = relations(quoteItems, ({ one }) => ({
+  quote: one(quotes, {
+    fields: [quoteItems.quoteId],
+    references: [quotes.id],
+  }),
+}));
+
+export const servicesRelations = relations(services, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [services.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
 // Schema export for Better Auth adapter
 export const schema = {
   user,
@@ -438,4 +685,8 @@ export const schema = {
   stages,
   deals,
   activities,
+  enquiries,
+  quotes,
+  quoteItems,
+  services,
 };

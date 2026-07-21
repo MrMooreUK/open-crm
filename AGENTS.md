@@ -14,7 +14,8 @@ This file helps AI coding agents (and humans) work in this repo without fighting
 1. **Always scope CRM queries by `organizationId`** from `requireMembership()`.
 2. **Schema changes** → edit schema → `npm run db:generate` → commit migrations.
 3. **UI stays minimal** — zinc neutrals, dense tables, no marketing chrome inside the app.
-4. **Secrets** stay in env files; never commit `.env`.
+4. **Secrets** stay in env files; never commit `.env`, keys, or `public/uploads/**` content.
+5. Prefer shared **data-table** and form patterns over one-off list UIs.
 
 ## Useful commands
 
@@ -35,3 +36,6 @@ npm run typecheck && npm run lint && npm run build
 | `docs/architecture.md` | System design |
 | `docs/api.md` | HTTP surface |
 | `docs/roadmap.md` | What’s next |
+| `docs/enquiries-quotes.md` | Enquiries, quotes, notifications |
+| `docs/contacts-import-export.md` | Contact I/O |
+| `SECURITY.md` | Vulnerability reporting + self-host checklist |

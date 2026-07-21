@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq, ilike, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { companies } from "@/lib/db/schema";
@@ -37,6 +37,8 @@ export async function getCompany(id: string) {
       deals: {
         with: { stage: true },
       },
+      enquiries: true,
+      quotes: true,
     },
   });
 }
@@ -157,4 +159,24 @@ export async function deleteCompany(id: string) {
   revalidatePath("/companies");
   revalidatePath("/");
   return { ok: true };
+}
+
+export async function deleteCompanies(ids: string[]) {
+  const { organizationId } = await requireMembership();
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return { error: "Nothing selected" };
+
+  await db
+    .delete(companies)
+    .where(
+      and(
+        eq(companies.organizationId, organizationId),
+        inArray(companies.id, unique)
+      )
+    );
+
+  revalidatePath("/companies");
+  revalidatePath("/contacts");
+  revalidatePath("/");
+  return { ok: true as const, deleted: unique.length };
 }

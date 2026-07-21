@@ -9,8 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Expanded documentation set (`docs/`, contributing, security, code of conduct)
-- GitHub issue and pull request templates
+- **Enquiries** — inbound leads with status, source, assignment, bulk delete
+- **Quotes** — multi-line quotes, tax, bill-to, status workflow, print/PDF
+- **Services catalog** — reusable rates for quote line items
+- **Contact import/export** — CSV, TSV, JSON, vCard, Excel + `GET /api/v1/contacts/export`
+- **Organization settings** split under sidebar accordion: profile, branding, regional, team
+- **Org branding** — logo upload, company address/tax/footer for quotes
+- **User account** (`/account`) — profile photo upload, email/name, password, sessions
+- **Notifications** — red badge + bell for enquiries in status `new`
+- **Data tables** — filters, column visibility/reorder, bulk select & delete (all main lists)
+- **Company → contact cascade** on deal/enquiry/quote forms
+- **Pipeline assignee avatars** on Kanban cards
+- Type-to-search pickers for company/contact/enquiry/deal/service
+- Expanded documentation and security self-host notes
+
+### Security
+
+- Session required to access `/uploads/*` (logos, avatars)
+- Compose binds Postgres to `127.0.0.1` by default
+- Stricter `.gitignore` for env files, keys, and user uploads
 
 ## [0.1.0] — 2026-07-21
 

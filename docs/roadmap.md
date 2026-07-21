@@ -2,26 +2,36 @@
 
 Status of open-crm relative to the product plan. Dates are aspirational, not commitments.
 
-## Shipped (0.1)
+## Shipped (0.1 → current main)
 
 - [x] Auth + organization bootstrap  
 - [x] Companies, contacts, deals  
-- [x] Pipeline Kanban  
+- [x] Pipeline Kanban (assignee avatars)  
 - [x] Activities & tasks  
 - [x] Search & dashboard  
 - [x] Invites & roles  
 - [x] Regional org settings  
+- [x] Company profile, branding/logo, quote footer  
+- [x] User account settings (avatar upload, password, sessions)  
 - [x] Quick-add contacts / company picker  
+- [x] Contact import/export (CSV, TSV, JSON, vCard, Excel)  
+- [x] Enquiries (inbound requests) + assignment  
+- [x] Quotes with line items + printable PDF view  
+- [x] Services catalog for quoting  
+- [x] Shared data tables (filters, columns, bulk delete)  
+- [x] Company → contact cascading selects  
+- [x] New-enquiry notifications (header + nav badge)  
 - [x] Docker Compose install  
 - [x] AGPL-3.0 + contributing docs  
 
 ## Next (0.2)
 
-- [ ] CSV import / export (contacts, companies)  
+- [ ] Company import / export  
 - [ ] Keyboard shortcuts (create, search, board)  
-- [ ] Saved filters / list sorting polish  
+- [ ] Saved views / more list power features  
 - [ ] Activity reminders (due tasks surfacing)  
 - [ ] More complete REST API for core entities  
+- [ ] Optional “mark enquiries seen” / read state for notifications  
 
 ## Later (0.3+)
 

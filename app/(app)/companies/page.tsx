@@ -2,7 +2,7 @@ import Link from "next/link";
 import { listCompanies } from "@/lib/actions/companies";
 import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
-import { formatDate } from "@/lib/utils";
+import { CompaniesTable } from "@/components/companies/companies-table";
 
 export default async function CompaniesPage() {
   const [{ organization }, companies] = await Promise.all([
@@ -45,39 +45,7 @@ export default async function CompaniesPage() {
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-zinc-200">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 text-xs font-medium uppercase tracking-wide text-zinc-500">
-              <tr>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Domain</th>
-                <th className="px-3 py-2">Industry</th>
-                <th className="px-3 py-2">Updated</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {companies.map((c) => (
-                <tr key={c.id} className="hover:bg-zinc-50/80">
-                  <td className="px-3 py-2.5">
-                    <Link
-                      href={`/companies/${c.id}`}
-                      className="font-medium text-zinc-900 hover:underline"
-                    >
-                      {c.name}
-                    </Link>
-                  </td>
-                  <td className="px-3 py-2.5 text-zinc-600">{c.domain || "—"}</td>
-                  <td className="px-3 py-2.5 text-zinc-600">
-                    {c.industry || "—"}
-                  </td>
-                  <td className="px-3 py-2.5 text-zinc-500">
-                    {formatDate(c.updatedAt, fmt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <CompaniesTable companies={companies} formatOpts={fmt} />
       )}
     </div>
   );

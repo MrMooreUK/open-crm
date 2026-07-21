@@ -7,6 +7,8 @@
 | [Architecture](./architecture.md) | System design and domain model |
 | [API](./api.md) | HTTP endpoints |
 | [Roadmap](./roadmap.md) | Shipped vs planned work |
+| [Contacts import/export](./contacts-import-export.md) | CSV, TSV, JSON, vCard, Excel |
+| [Enquiries & quotes](./enquiries-quotes.md) | Inbound requests, quotes, notifications |
 | [Product plan](./product-plan.md) | Original product & technical plan (historical) |
 
 Project-wide policies live at the repo root:

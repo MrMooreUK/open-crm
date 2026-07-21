@@ -1,18 +1,26 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Search } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
+import type { AppNotifications } from "@/lib/actions/notifications";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 export function Header({
   userName,
+  userImage,
   orgName,
+  notifications,
 }: {
   userName: string;
+  userImage?: string | null;
   orgName: string;
+  notifications: AppNotifications;
 }) {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -44,11 +52,24 @@ export function Header({
           ⌘K
         </div>
       </form>
-      <div className="ml-auto flex items-center gap-3">
-        <div className="hidden rounded-2xl border border-indigo-100 bg-white/80 px-3 py-2 text-right shadow-sm sm:block">
-          <div className="text-xs font-semibold text-zinc-900">{userName}</div>
-          <div className="text-[11px] text-indigo-500">{orgName}</div>
-        </div>
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <NotificationBell notifications={notifications} />
+        <Link
+          href="/account"
+          title="Account settings"
+          className="flex items-center gap-2 rounded-2xl border border-indigo-100 bg-white/80 px-2 py-1.5 shadow-sm transition hover:bg-indigo-50/60 sm:px-3 sm:py-2"
+        >
+          <div className="hidden text-right sm:block">
+            <div className="text-xs font-semibold text-zinc-900">{userName}</div>
+            <div className="text-[11px] text-indigo-500">{orgName}</div>
+          </div>
+          <UserAvatar
+            name={userName}
+            image={userImage}
+            size="sm"
+            title={`${userName} — account settings`}
+          />
+        </Link>
         <Button
           type="button"
           variant="ghost"

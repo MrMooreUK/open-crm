@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| `0.x` (main) | Yes |
+| `0.x` (`main`) | Yes |
 
 Security fixes land on `main` first.
 
@@ -35,10 +35,32 @@ We welcome good-faith research. Do not:
 
 ## Security baseline (project)
 
-- Passwords handled by Better Auth (strong hashing)  
-- Session cookies for browser auth  
-- Multi-tenant isolation by `organization_id` on CRM queries  
-- Secrets via environment variables only (never commit `.env`)  
-- Dependency and CI checks on pull requests  
+| Area | Approach |
+|------|----------|
+| Passwords | Better Auth (hashed; change-password requires current password) |
+| Sessions | HTTP-only session cookies; account page can list/revoke sessions |
+| Multi-tenancy | CRM queries scoped by `organization_id` via `requireMembership()` |
+| Secrets | Environment variables only — never commit `.env` |
+| Uploads | Stored under `public/uploads` (gitignored); **session required** to fetch |
+| Health | `/api/health` is unauthenticated and returns only ok/down — no secrets |
+| Dependencies | CI on pull requests |
 
-If you find a gap in that baseline, report it privately—thank you.
+## Self-host checklist
+
+1. Set a unique `BETTER_AUTH_SECRET` (32+ random characters)  
+2. Set `BETTER_AUTH_URL` / `APP_URL` to your real public origin (HTTPS in production)  
+3. Do **not** expose Postgres to the public internet (Compose binds `127.0.0.1:5432` by default)  
+4. Change the default Postgres password for shared hosts  
+5. Keep `.env`, backups, and `uploads` volumes private  
+6. Terminate TLS at a reverse proxy or load balancer  
+7. Apply OS and container updates regularly  
+
+## What is not in this repository
+
+- Real `.env` files or production secrets  
+- User-uploaded logos or avatars (`public/uploads/**` is ignored)  
+- Private keys, tokens, or customer data  
+
+If you find any of the above in a clone or PR, treat it as an incident: rotate credentials and notify maintainers.
+
+If you find a gap in the baseline, report it privately—thank you.

@@ -19,16 +19,17 @@ npm run dev
 | Service | URL |
 |---------|-----|
 | App | http://localhost:3000 |
-| Postgres | `postgresql://opencrm:opencrm@localhost:5432/opencrm` |
+| Postgres | `postgresql://opencrm:opencrm@localhost:5432/opencrm` (loopback only) |
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Next.js dev server (Turbopack) |
+| `npm run dev` | Next.js dev server |
 | `npm run build` | Production build |
 | `npm run start` | Serve production build |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
 | `npm run db:generate` | Create SQL migration from schema changes |
 | `npm run db:migrate` | Apply migrations |
 | `npm run db:push` | Push schema without migration files (prototyping only) |
@@ -53,6 +54,10 @@ Prefer **Server Actions** in `lib/actions/*` for form posts. Revalidate the affe
 4. `npm run db:migrate`  
 5. Commit schema + migration + meta together  
 
+### Lists / data tables
+
+Use `components/data-table/*` for entity lists so filters, columns, and bulk delete stay consistent. Wire bulk delete via `makeBulkDeleteAction` + a `deleteMany(ids)` server action.
+
 ### UI
 
 - Minimalist, light mode, zinc palette  
@@ -63,10 +68,16 @@ Prefer **Server Actions** in `lib/actions/*` for form posts. Revalidate the affe
 
 Better Auth routes live at `/api/auth/*`. Session helpers: `lib/session.ts`. Register creates org + default pipeline via `/api/onboarding`.
 
+### Secrets & local data
+
+- Copy `.env.example` → `.env` (never commit `.env`)  
+- `public/uploads/**` is gitignored — only `.gitkeep` is tracked  
+- Do not paste production secrets into issues, PRs, or screenshots  
+
 ## Checks before PR
 
 ```bash
-npx tsc --noEmit
+npm run typecheck
 npm run lint
 npm run build
 ```

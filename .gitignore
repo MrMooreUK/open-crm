@@ -22,7 +22,13 @@
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
 
 # debug
 npm-debug.log*
@@ -30,11 +36,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env / secrets — never commit real credentials
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.example
+*.env.local
+credentials.json
+service-account*.json
 
 # vercel
 .vercel
@@ -48,4 +56,13 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-Thumbs.db
+
+# User-generated uploads (avatars, logos) — local only
+/public/uploads/**
+!/public/uploads/.gitkeep
+
+# Local agent / editor scratch
+.grok/
+.cursor/
+.claude/
+*.local.md

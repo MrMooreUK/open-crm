@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { getAppNotifications } from "@/lib/actions/notifications";
 import { requireMembership } from "@/lib/session";
 
 export default async function AuthenticatedLayout({
@@ -6,10 +7,18 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, organization } = await requireMembership();
+  const [{ user, organization }, notifications] = await Promise.all([
+    requireMembership(),
+    getAppNotifications(),
+  ]);
 
   return (
-    <AppShell userName={user.name} orgName={organization.name}>
+    <AppShell
+      userName={user.name}
+      userImage={user.image}
+      orgName={organization.name}
+      notifications={notifications}
+    >
       {children}
     </AppShell>
   );
