@@ -27,7 +27,7 @@ export function DealStageBreadcrumb({
   return (
     <nav
       aria-label="Deal stage"
-      className="mb-5 overflow-x-auto rounded-lg border border-zinc-200/90 bg-gradient-to-r from-brand-subtle/50 via-white to-white px-3 py-2.5 shadow-sm shadow-zinc-900/[0.02]"
+      className="mb-5 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-2.5"
     >
       <ol className="flex min-w-min items-center gap-0.5 text-sm">
         <li className="flex shrink-0 items-center">

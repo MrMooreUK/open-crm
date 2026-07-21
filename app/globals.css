@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 /*
-  Brand identity — teal/cyan, restrained.
-  Neutrals stay zinc; brand is used for primary actions, logo, and accents.
+  Restrained brand: teal for primary actions only.
+  Everything else stays zinc/white and dense.
 */
 :root {
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #18181b;
   --brand: #0f766e;
   --brand-hover: #0d9488;
@@ -14,8 +14,6 @@
   --brand-muted: #ccfbf1;
   --brand-subtle: #f0fdfa;
   --brand-border: #99f6e4;
-  --brand-ring: rgb(15 118 110 / 0.35);
-  --surface-muted: #fafafa;
 }
 
 @theme inline {
@@ -38,25 +36,21 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "cv01", "ss03";
 }
 
 * {
   border-color: #e4e4e7;
 }
 
-/* Selection tint */
 ::selection {
   background: var(--brand-muted);
   color: var(--brand-active);
 }
 
-/* Dense tables */
 table {
   border-collapse: collapse;
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -65,11 +59,8 @@ table {
   background: #d4d4d8;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
-}
 
-/* Shared primary CTA used by Link-as-button patterns */
+/* Shared primary CTA for Link-as-button patterns */
 .btn-primary {
   display: inline-flex;
   height: 2.25rem;

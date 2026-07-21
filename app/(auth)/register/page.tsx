@@ -57,7 +57,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="border-zinc-200/80 shadow-md shadow-teal-900/5">
+    <Card>
       <CardHeader>
         <div className="mb-2">
           <BrandWordmark size="md" />

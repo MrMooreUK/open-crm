@@ -6,7 +6,7 @@ const sizes = {
   lg: "h-9 w-9 text-sm",
 } as const;
 
-/** open-crm logo mark — gradient tile with monogram */
+/** open-crm logo mark */
 export function BrandMark({
   size = "sm",
   className,
@@ -17,7 +17,7 @@ export function BrandMark({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-teal-600 to-cyan-700 font-bold text-white shadow-sm shadow-teal-900/10",
+        "flex shrink-0 items-center justify-center rounded-md bg-brand font-bold text-brand-foreground",
         sizes[size],
         className
       )}
