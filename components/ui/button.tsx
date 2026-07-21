@@ -3,22 +3,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-zinc-900 text-white hover:bg-zinc-800",
-        secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200",
+        default:
+          "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm shadow-indigo-300/60 hover:from-indigo-500 hover:to-violet-500",
+        secondary:
+          "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100",
         outline:
-          "border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900",
-        ghost: "hover:bg-zinc-100 text-zinc-700",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
-        link: "text-zinc-900 underline-offset-4 hover:underline",
+          "border border-indigo-100 bg-white/85 text-zinc-900 shadow-sm shadow-indigo-100/50 hover:bg-indigo-50",
+        ghost: "text-zinc-700 hover:bg-indigo-50 hover:text-indigo-700",
+        destructive:
+          "bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-sm shadow-red-200 hover:from-red-500 hover:to-rose-500",
+        link: "text-indigo-700 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-3.5 py-2",
-        sm: "h-8 rounded-md px-2.5 text-xs",
-        lg: "h-10 rounded-md px-5",
+        sm: "h-8 rounded-xl px-2.5 text-xs",
+        lg: "h-10 rounded-2xl px-5",
         icon: "h-8 w-8",
       },
     },
