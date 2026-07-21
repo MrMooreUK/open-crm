@@ -1,12 +1,37 @@
 {
   "name": "open-crm",
   "version": "0.1.0",
-  "private": true,
+  "description": "Own your pipeline. Self-hosted open-source CRM for small teams.",
+  "license": "AGPL-3.0-only",
+  "private": false,
+  "author": "open-crm contributors",
+  "homepage": "https://github.com/MrMooreUK/open-crm#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrMooreUK/open-crm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrMooreUK/open-crm/issues"
+  },
+  "keywords": [
+    "crm",
+    "open-source",
+    "self-hosted",
+    "sales",
+    "pipeline",
+    "nextjs",
+    "postgres",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:push": "drizzle-kit push",

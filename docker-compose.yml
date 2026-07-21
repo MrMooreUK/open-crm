@@ -1,3 +1,11 @@
+# open-crm — one-command install
+#
+#   docker compose up -d
+#   open http://localhost:3000
+#
+# Production: set BETTER_AUTH_SECRET (and public URLs) in a .env file.
+# See .env.example and docs/install.md
+
 services:
   db:
     image: postgres:16-alpine

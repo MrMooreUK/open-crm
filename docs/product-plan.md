@@ -1,10 +1,14 @@
 # open-crm — Product & Technical Plan
 
+> **Note:** This is the original design document. For current status, see
+> [roadmap.md](./roadmap.md) and the root [README.md](../README.md).
+> License is **AGPL-3.0** (confirmed).
+
 **Working title:** open-crm  
-**Status:** Draft plan  
+**Status:** Historical plan (MVP largely implemented)  
 **Author:** Grok (xAI)  
 **Date:** 2026-07-21  
-**License (proposed):** AGPL-3.0 (or Apache-2.0 if broader commercial adoption is prioritized)
+**License:** AGPL-3.0
 
 ---
 
