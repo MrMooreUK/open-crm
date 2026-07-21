@@ -1,8 +1,8 @@
 # Roadmap
 
-Status of open-crm relative to the product plan. Dates are aspirational, not commitments.
+Status of open-crm. Dates are aspirational, not commitments.
 
-## Shipped (0.1 → current main)
+## Shipped (current `main`)
 
 - [x] Auth + organization bootstrap  
 - [x] Companies, contacts, deals  
@@ -11,19 +11,15 @@ Status of open-crm relative to the product plan. Dates are aspirational, not com
 - [x] Activities & tasks  
 - [x] Search & dashboard  
 - [x] Invites & roles  
-- [x] Regional org settings  
-- [x] Company profile, branding/logo, quote footer  
-- [x] User account settings (avatar upload, password, sessions)  
+- [x] Regional org settings + company profile + logo  
+- [x] User account (avatar, password, sessions)  
 - [x] Default avatar + header profile photo  
-- [x] Teal brand identity (tokens, logo mark, primary actions)  
-- [x] Quick-add contacts / company picker  
+- [x] Calm UI (zinc chrome, teal primary actions)  
 - [x] Contact import/export (CSV, TSV, JSON, vCard, Excel)  
-- [x] Enquiries (inbound requests) + assignment  
-- [x] Quotes with line items + printable PDF view  
-- [x] Services catalog for quoting  
+- [x] Enquiries + assignment + notifications  
+- [x] Quotes + services catalog + print/PDF  
 - [x] Shared data tables (filters, columns, bulk delete)  
 - [x] Company → contact cascading selects  
-- [x] New-enquiry notifications (header + nav badge)  
 - [x] Docker Compose install (hardened defaults)  
 - [x] AGPL-3.0 + contributing / security docs  
 
@@ -31,29 +27,29 @@ Status of open-crm relative to the product plan. Dates are aspirational, not com
 
 - [ ] Company import / export  
 - [ ] Keyboard shortcuts (create, search, board)  
-- [ ] Saved views / more list power features  
+- [ ] Saved views / stronger list tools  
 - [ ] Activity reminders (due tasks surfacing)  
-- [ ] More complete REST API for core entities  
-- [ ] Optional “mark enquiries seen” / read state for notifications  
+- [ ] Broader REST API for core entities  
+- [ ] Optional “mark enquiries seen” for notifications  
 - [ ] Click stage breadcrumb to move deal (with confirm)  
 
 ## Later (0.3+)
 
-- [ ] API tokens & webhooks (deal stage changes)  
+- [ ] API tokens & webhooks  
 - [ ] Custom fields  
-- [ ] Basic automations (“when Won → create task”)  
+- [ ] Basic automations  
 - [ ] Reports (win rate, pipeline by stage)  
-- [ ] Optional OAuth login (Google)  
+- [ ] Optional OAuth (e.g. Google)  
 - [ ] Outbound email via SMTP  
 
 ## Explicit non-goals (for now)
 
-- Full marketing automation / bulk email platform  
+- Full marketing automation / bulk email  
 - Dialer / call recording  
 - Complex CPQ  
 - Native mobile apps  
-- Multi-workspace UX as a product surface  
+- Multi-workspace product surface  
 
-## How to influence the roadmap
+## Influence the roadmap
 
-Open an issue with the `enhancement` label, or a discussion. PRs that match **Next (0.2)** items are especially welcome.
+Open an issue with `enhancement`, or a discussion. PRs that match **Next (0.2)** are especially welcome.

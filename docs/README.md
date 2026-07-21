@@ -5,7 +5,7 @@
 | [Install](./install.md) | Docker Compose self-host & production notes |
 | [Development](./development.md) | Local setup, scripts, conventions |
 | [Architecture](./architecture.md) | System design and domain model |
-| [UI & brand](./ui.md) | Teal brand tokens, chrome, shared patterns |
+| [UI & brand](./ui.md) | Calm zinc UI, teal accents, shared patterns |
 | [API](./api.md) | HTTP endpoints |
 | [Roadmap](./roadmap.md) | Shipped vs planned work |
 | [Contacts import/export](./contacts-import-export.md) | CSV, TSV, JSON, vCard, Excel |

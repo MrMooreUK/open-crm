@@ -8,6 +8,7 @@ A clean, self-hostable CRM for small teams who want full data ownership—withou
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](./LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
 [![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](./docker-compose.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 
 ---
 
@@ -17,7 +18,7 @@ A clean, self-hostable CRM for small teams who want full data ownership—withou
 |---------|----------|
 | Spreadsheets fall apart at scale | Real companies, contacts, deals & pipeline |
 | SaaS CRM is expensive and sticky | Self-host, export anytime, AGPL source |
-| Enterprise tools are heavy | Minimalist UI—dense lists, not marketing chrome |
+| Enterprise tools are heavy | Dense, calm UI—lists over marketing chrome |
 | “Open source” installs are painful | `docker compose up -d` and go |
 
 Built for **founders, sales pods, and agencies** (roughly 1–50 people).
@@ -26,31 +27,43 @@ Built for **founders, sales pods, and agencies** (roughly 1–50 people).
 
 ## Features
 
-- **Companies & contacts** — linked records, quick-add, search-or-create company
-- **Import / export** — contacts as CSV, TSV, JSON, vCard, or Excel
-- **Enquiries** — inbound requests, status workflow, teammate assignment
-- **Quotes** — line items, tax, service catalog, print/PDF
-- **Services** — reusable priced offerings for one-click quote lines
-- **Deals & pipeline** — list + Kanban drag-and-drop; assignee avatars; stage breadcrumb on deal detail
-- **Activities & tasks** — notes, calls, emails, meetings; open-task list
-- **Data tables** — filters, column show/hide/reorder, bulk select & delete
-- **Company → contact filtering** — pick a company, only see its people
-- **Search & dashboard** — global search; pipeline value and recent activity
-- **Notifications** — red badge when new enquiries need attention
-- **Account settings** — profile photo (with default avatar), password, sessions
-- **Organization settings** — profile, branding/logo, regional defaults, team invites
-- **Brand UI** — restrained teal identity, dense zinc chrome
-- **One-command install** — Docker Compose (app + Postgres)
+### Core CRM
 
-### Docs & roadmap
+| Area | What you get |
+|------|----------------|
+| **Companies & contacts** | Linked records, quick-add, search-or-create company |
+| **Deals & pipeline** | List + Kanban drag-and-drop, assignee avatars, stage breadcrumb on deal detail |
+| **Enquiries** | Inbound requests, status workflow, teammate assignment, notification badge |
+| **Quotes** | Line items, tax, bill-to snapshot, status workflow, print/PDF |
+| **Services** | Priced catalog for one-click quote lines |
+| **Activities & tasks** | Notes, calls, emails, meetings; open-task list with complete |
 
-| Doc | Topic |
-|-----|--------|
-| [docs/roadmap.md](./docs/roadmap.md) | Shipped vs planned |
-| [docs/ui.md](./docs/ui.md) | Brand & UI patterns |
-| [docs/contacts-import-export.md](./docs/contacts-import-export.md) | Contact I/O |
-| [docs/enquiries-quotes.md](./docs/enquiries-quotes.md) | Enquiries & quotes |
-| [docs/](./docs/README.md) | Full documentation index |
+### Productivity
+
+- **Data tables** — search, column filters, show/hide/reorder columns (saved in the browser), bulk select & delete  
+- **Company → contact cascade** — pick a company, only see its people on forms  
+- **Type-to-search** selects for companies, contacts, enquiries, deals, services  
+- **Global search** across companies, contacts, and deals  
+- **Dashboard** — open deals, pipeline value, tasks, recent activity  
+
+### Team & settings
+
+- **Invites** — link-based, owner / member roles  
+- **Organization** — company profile, logo/branding, regional defaults (timezone, currency, locale, dates, fiscal year), team  
+- **Your account** — name, email, profile photo (or default avatar), password, active sessions  
+- **Notifications** — header bell + nav badge for enquiries in status `new`  
+
+### Install & ops
+
+- **Docker Compose** — app + Postgres, migrations on start  
+- **Health check** — `GET /api/health`  
+- **Contact I/O** — CSV, TSV, JSON, vCard, Excel (UI + `GET /api/v1/contacts/export`)  
+
+### Design
+
+Calm **zinc** chrome with a restrained **teal** accent for primary actions and the logo—dense tables, short copy, no flashy gradients.
+
+See [docs/ui.md](./docs/ui.md).
 
 ---
 
@@ -62,20 +75,27 @@ Built for **founders, sales pods, and agencies** (roughly 1–50 people).
 git clone https://github.com/MrMooreUK/open-crm.git
 cd open-crm
 cp .env.example .env
-# Production: set BETTER_AUTH_SECRET and public URLs in .env first
+# Production: set a strong BETTER_AUTH_SECRET and your public HTTPS URLs first
 docker compose up -d
 ```
 
-Open **http://localhost:3000**, register, and create your workspace.
+Open **http://localhost:3000** → create an account → workspace is ready (default pipeline stages included).
 
-> **Production:** always set a strong secret and real public URL:
->
-> ```bash
-> cp .env.example .env
-> # edit BETTER_AUTH_SECRET=$(openssl rand -base64 32)
-> # edit BETTER_AUTH_URL / APP_URL to https://crm.example.com
-> docker compose up -d
-> ```
+<details>
+<summary><strong>Production secrets (required on any shared host)</strong></summary>
+
+```bash
+cp .env.example .env
+# BETTER_AUTH_SECRET=$(openssl rand -base64 32)
+# BETTER_AUTH_URL=https://crm.example.com
+# APP_URL=https://crm.example.com
+# POSTGRES_PASSWORD=…   # optional but recommended beyond local demos
+docker compose up -d
+```
+
+Postgres is bound to **127.0.0.1** by default (not exposed on the LAN). Details: [docs/install.md](./docs/install.md) · [SECURITY.md](./SECURITY.md).
+
+</details>
 
 ### Local development
 
@@ -91,23 +111,23 @@ npm run db:migrate
 npm run dev
 ```
 
-Optional demo data (register an account first):
+Optional demo data (register first):
 
 ```bash
 npm run db:seed
 ```
 
-More detail: [docs/install.md](./docs/install.md) · [docs/development.md](./docs/development.md)
+More: [docs/development.md](./docs/development.md)
 
 ---
 
 ## Screenshots
 
-> Screenshots welcome—open a PR with PNGs under `docs/images/`.
+> Screenshots welcome—open a PR with PNGs under [`docs/images/`](./docs/images/).
 
-| Home | Pipeline | Contacts |
-|------|----------|----------|
-| Dashboard with pipeline value & activity | Drag deals across stages | Quick-add with company search |
+| Home | Pipeline | Records |
+|------|----------|---------|
+| Dashboard stats & recent activity | Drag deals across stages | Filterable lists, bulk actions |
 
 ---
 
@@ -115,14 +135,14 @@ More detail: [docs/install.md](./docs/install.md) · [docs/development.md](./doc
 
 | Layer | Technology |
 |-------|------------|
-| App | [Next.js](https://nextjs.org) (App Router) + TypeScript |
-| UI | React, Tailwind CSS, Lucide icons |
+| App | [Next.js](https://nextjs.org) App Router + TypeScript |
+| UI | React, Tailwind CSS, Lucide |
 | Database | PostgreSQL 16 + [Drizzle ORM](https://orm.drizzle.team) |
 | Auth | [Better Auth](https://www.better-auth.com) (email / password sessions) |
 | Validation | Zod |
 | Deploy | Docker Compose |
 
-Architecture notes: [docs/architecture.md](./docs/architecture.md)
+Architecture: [docs/architecture.md](./docs/architecture.md)
 
 ---
 
@@ -130,11 +150,11 @@ Architecture notes: [docs/architecture.md](./docs/architecture.md)
 
 ```
 open-crm/
-├── app/                 # Next.js routes (UI + API)
-├── components/          # UI and feature components
-├── lib/                 # Auth, DB, actions, validations
+├── app/                 # Routes: (app), (auth), (print), api
+├── components/          # Feature UI + shared data-table / primitives
+├── lib/                 # Auth, DB schema/migrations, server actions
 ├── scripts/             # migrate, seed
-├── docs/                # Guides and roadmap
+├── docs/                # Install, architecture, UI, API, roadmap
 ├── docker-compose.yml
 ├── Dockerfile
 └── LICENSE              # AGPL-3.0
@@ -146,13 +166,13 @@ open-crm/
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | yes (dev / host tools) | Postgres connection string |
+| `DATABASE_URL` | yes (host tooling) | Postgres connection string |
 | `BETTER_AUTH_SECRET` | **yes in production** | Session signing secret (32+ chars) |
-| `BETTER_AUTH_URL` | yes | Public app URL (browser origin) |
+| `BETTER_AUTH_URL` | yes | Public app origin (browser URL) |
 | `APP_URL` | yes | Same as above for redirects |
-| `POSTGRES_PASSWORD` | optional | Compose DB password (default `opencrm` for local demos only) |
+| `POSTGRES_PASSWORD` | optional | Compose DB password (default is for local demos only) |
 
-**Never commit `.env`.** Only [`.env.example`](./.env.example) is tracked. See [SECURITY.md](./SECURITY.md).
+**Never commit `.env`.** Only [`.env.example`](./.env.example) is tracked.
 
 ---
 
@@ -163,6 +183,7 @@ open-crm/
 | `npm run dev` | Dev server (http://localhost:3000) |
 | `npm run build` / `start` | Production build & server |
 | `npm run lint` / `typecheck` | ESLint / TypeScript |
+| `npm test` | Vitest unit tests |
 | `npm run db:generate` | Generate Drizzle migrations |
 | `npm run db:migrate` | Apply migrations |
 | `npm run db:seed` | Load demo data |
@@ -172,20 +193,39 @@ open-crm/
 
 ## API (overview)
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/health` | Liveness + database ping |
-| `GET /api/v1/me` | Current user + organization (session) |
-| `GET /api/v1/contacts/export` | Contact export (session) |
-| `/api/auth/*` | Better Auth (register, login, session) |
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| `GET /api/health` | none | Liveness + DB ping |
+| `GET /api/v1/me` | session | Current user + organization |
+| `GET /api/v1/contacts/export?format=` | session | Contact export (`csv`, `tsv`, `json`, `vcf`, `xlsx`) |
+| `/api/auth/*` | — | Better Auth (register, login, session, password) |
 
-See [docs/api.md](./docs/api.md).
+Most CRM mutations are **Server Actions** in `lib/actions/*` (first-party UI). Full notes: [docs/api.md](./docs/api.md).
+
+---
+
+## Documentation
+
+| Guide | Topic |
+|-------|--------|
+| [docs/install.md](./docs/install.md) | Self-host & production |
+| [docs/development.md](./docs/development.md) | Local setup & conventions |
+| [docs/architecture.md](./docs/architecture.md) | System design |
+| [docs/ui.md](./docs/ui.md) | UI patterns & brand tokens |
+| [docs/api.md](./docs/api.md) | HTTP surface |
+| [docs/contacts-import-export.md](./docs/contacts-import-export.md) | Contact I/O |
+| [docs/enquiries-quotes.md](./docs/enquiries-quotes.md) | Enquiries & quotes |
+| [docs/roadmap.md](./docs/roadmap.md) | Shipped vs planned |
+| [docs/README.md](./docs/README.md) | Full index |
+| [CHANGELOG.md](./CHANGELOG.md) | Release notes |
+| [SECURITY.md](./SECURITY.md) | Vulnerability reporting |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute |
 
 ---
 
 ## Contributing
 
-Contributions are welcome—bug fixes, docs, UX polish, and small features first.
+Bug fixes, docs, UX polish, and small features first.
 
 1. Read [CONTRIBUTING.md](./CONTRIBUTING.md)  
 2. Open an issue for larger changes  
@@ -205,9 +245,9 @@ Please follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Security
 
-Please **do not** open public issues for vulnerabilities. See [SECURITY.md](./SECURITY.md).
+**Do not** open public issues for vulnerabilities. See [SECURITY.md](./SECURITY.md).
 
-Self-host checklist: strong `BETTER_AUTH_SECRET`, HTTPS public URL, keep Postgres off the public internet, never commit secrets or upload folders.
+Self-host checklist: strong `BETTER_AUTH_SECRET`, HTTPS public URL, keep Postgres off the public internet, never commit secrets or `public/uploads/**` user files.
 
 ---
 
@@ -231,4 +271,6 @@ Inspired by the idea that CRM data should belong to the teams that create it—n
   <a href="https://github.com/MrMooreUK/open-crm/issues">Issues</a>
   ·
   <a href="./CONTRIBUTING.md">Contribute</a>
+  ·
+  <a href="./docs/README.md">Docs</a>
 </p>

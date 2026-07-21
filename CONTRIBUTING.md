@@ -47,8 +47,8 @@ See [docs/development.md](./docs/development.md) for conventions.
 
 - **TypeScript** throughout; prefer explicit types on public boundaries.
 - **Server actions** for form mutations; keep DB access org-scoped (`organizationId`).
-- **UI** stays minimal: zinc neutrals + restrained teal brand; dense tables; see [docs/ui.md](./docs/ui.md).
-- **Primary CTAs** use brand (`Button` or `.btn-primary`), not bare `bg-zinc-900`.
+- **UI** stays calm: zinc neutrals + restrained teal primary; dense tables; no flashy multi-colour chrome. See [docs/ui.md](./docs/ui.md).
+- **Primary CTAs** use brand (`Button` or `.btn-primary`), not bare `bg-zinc-900` or gradient stacks.
 - **Migrations** via Drizzle (`npm run db:generate`)—never edit applied SQL casually.
 - Avoid new heavy dependencies unless the benefit is clear.
 - Update **docs + CHANGELOG** when behaviour, install, or security posture changes.

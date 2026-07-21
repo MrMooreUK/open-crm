@@ -1,59 +1,67 @@
 # UI & brand
 
-open-crm stays **minimal and dense**, with a restrained **teal brand** for identity and primary actions—not a marketing-site redesign.
+open-crm is **minimal and dense**: zinc neutrals, white surfaces, and a restrained **teal** accent for primary actions and identity—not gradients, glassmorphism, or multi-colour icon chrome.
+
+## Design principles
+
+1. **Calm chrome** — sidebar and header are light zinc/white; no dark rainbow nav.  
+2. **One accent colour** — teal for primary buttons, logo mark, and active-nav icons.  
+3. **Dense lists** — tables first; short copy; avoid decorative empty space.  
+4. **Shared patterns** — data-table, searchable selects, avatars—not one-off list UIs.
 
 ## Brand tokens
 
-Defined in `app/globals.css` and exposed to Tailwind as:
+Defined in `app/globals.css` and exposed to Tailwind:
 
 | Token | Role |
 |-------|------|
-| `brand` | Primary actions, active emphasis (`#0f766e`) |
-| `brand-hover` / `brand-active` | Button hover / press |
+| `brand` | Primary actions (`#0f766e`) |
+| `brand-hover` / `brand-active` | Hover / press |
 | `brand-foreground` | Text on brand fills |
-| `brand-muted` / `brand-subtle` | Soft backgrounds (nav active, auth wash) |
-| `brand-border` | Soft rings and dividers |
-
-Neutrals remain **zinc** for body text, chrome, and tables.
+| `brand-muted` / `brand-subtle` | Soft tints (selection, light fills) |
+| `brand-border` | Soft borders when needed |
 
 ### Primary CTAs
 
-- Prefer `<Button>` (default variant uses brand).
-- Link-as-button patterns use `.btn-primary` / `.btn-primary-sm` (see `globals.css`).
+- Prefer `<Button>` (default variant uses brand).  
+- Link-as-button patterns: `.btn-primary` / `.btn-primary-sm` in `globals.css`.  
+- Do **not** reintroduce multi-stop indigo/violet gradients for primary actions.
 
 ### Logo
 
-- `BrandMark` / `BrandWordmark` in `components/ui/brand-mark.tsx`
-- Used in sidebar and auth screens
+- `BrandMark` / `BrandWordmark` — solid teal tile with **OC**  
+- Used in sidebar and auth screens  
 
 ## Layout chrome
 
 | Surface | Treatment |
 |---------|-----------|
-| Sidebar | Light brand gradient wash; active items use brand ring/text |
-| Header | Avatar + name → `/account`; notification bell |
-| Page header | Short brand accent bar above the title |
-| Auth | Soft teal/cyan gradient backdrop |
+| Sidebar | Light zinc (`bg-zinc-50`), collapsible sections, plain links |
+| Active nav | White row + light ring; icon tinted brand |
+| Header | White bar; search; notification bell; avatar → `/account` |
+| Page header | Title + description only (no decorative cards/gradients) |
+| Auth | Simple zinc-50 page background + card |
+| Main | White content area |
 
 ## Shared patterns
 
 ### Data tables (`components/data-table/*`)
 
-- Search, column filters, show/hide + drag reorder (prefs in `localStorage`)
-- Bulk select + bulk actions (delete on all main lists)
-- Wire delete with `makeBulkDeleteAction` + a server `deleteMany(ids)` action
+- Search, column filters, show/hide + drag reorder (`localStorage` prefs)  
+- Bulk select + bulk actions (delete on all main lists)  
+- Wire delete with `makeBulkDeleteAction` + server `deleteMany(ids)`  
 
 ### Avatars (`UserAvatar`, `lib/avatar.ts`)
 
-- Uploaded image when set
-- Fallback: `/default-avatar.svg` (public static asset)
-- Header, pipeline cards, account page
+- Uploaded image when set  
+- Fallback: `/default-avatar.svg`  
+- Header, pipeline cards, account page  
 
 ### Forms
 
-- `SearchableSelect` for companies, contacts, enquiries, deals, services
-- Company → contact cascade via `lib/crm-links.ts`
-- Org settings forms use password-manager ignore attrs
+- `SearchableSelect` for companies, contacts, enquiries, deals, services  
+- Company → contact cascade via `lib/crm-links.ts`  
+- Org settings: password-manager ignore attrs on org profile fields  
 
 ### Deal stage breadcrumb
 
@@ -67,14 +75,14 @@ Past stages show a check; current stage is highlighted (Won/Lost use green/red).
 
 ### Notifications
 
-Enquiries with status `new` drive:
+Enquiries with status **`new`**:
 
-- Header bell + count badge
-- Sidebar Sales / Enquiries badges
+- Header bell + count  
+- Sidebar Sales / Enquiries badges  
 
 ## Conventions for contributors
 
-1. Do **not** reintroduce pure black primary buttons (`bg-zinc-900`) for main CTAs—use brand tokens.  
-2. Keep decoration minimal: one accent, not multi-colour dashboards.  
-3. Prefer existing `components/ui/*` primitives.  
-4. Dense tables and short copy over empty marketing chrome.  
+1. Prefer zinc + teal; avoid rainbow accents and heavy blur/shadow stacks.  
+2. Prefer existing `components/ui/*` primitives.  
+3. Dense tables and short copy over marketing chrome.  
+4. Update this doc and the README when UI patterns change.  

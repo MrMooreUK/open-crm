@@ -13,13 +13,11 @@ Browser
   → PostgreSQL
 ```
 
-Why a monolith for v0.1+:
+Why a monolith:
 
 - One Docker image, one deploy  
 - Shared types and Zod schemas  
-- Faster iteration for a small team  
-
-The UI is intentionally not the only client: actions and `/api/v1/*` can grow toward a fuller HTTP API.
+- Fast iteration for a small team  
 
 ## Domains
 
@@ -27,25 +25,21 @@ The UI is intentionally not the only client: actions and `/api/v1/*` can grow to
 Organization
 ├── Members (owner | member)
 ├── Invites
-├── Settings
-│   ├── Company profile
-│   ├── Branding (logo)
-│   ├── Regional defaults
-│   └── Team
+├── Settings (profile, branding, regional, team)
 ├── Companies
 │   └── Contacts
 ├── Pipeline → Stages → Deals (owner assignment)
-├── Enquiries (inbound leads; status workflow)
+├── Enquiries (inbound; status workflow)
 ├── Quotes → Quote items (+ Services catalog)
-├── Activities (linked to company / contact / deal)
+├── Activities (company / contact / deal)
 └── Users (profile image, password, sessions)
 ```
 
 ### Tenancy
 
-Users belong to an organization via `members`. On register, a user becomes **owner** of a new org and receives a default pipeline.
+Users join an organization via `members`. On register, a user becomes **owner** of a new org and receives a default pipeline.
 
-MVP assumption: one primary membership per user. Invites attach additional users to an existing org.
+Assumption: one primary membership per user. Invites attach more users to an existing org.
 
 Every CRM query must be scoped by `organizationId` from `requireMembership()`.
 
@@ -58,71 +52,64 @@ Every CRM query must be scoped by `organizationId` from `requireMembership()`.
 | `app/(print)/*` | Printable quote layout |
 | `app/api/*` | Health, auth, onboarding, v1 |
 | `components/*` | Feature UI + primitives |
-| `components/data-table/*` | Shared lists (filters, columns, bulk actions) |
-| `components/ui/*` | Brand mark, buttons, inputs, avatars |
+| `components/data-table/*` | Shared lists (filters, columns, bulk) |
 | `lib/db/*` | Schema, client, migrations |
-| `lib/actions/*` | Server actions (mutations + queries) |
+| `lib/actions/*` | Server actions |
 | `lib/auth.ts` | Better Auth server config |
 | `lib/avatar.ts` | Default avatar helper |
-| `middleware.ts` | Session cookie gate for protected routes (incl. `/uploads`) |
-| `app/globals.css` | Brand CSS tokens + base styles |
+| `middleware.ts` | Session gate (incl. `/uploads`) |
+| `app/globals.css` | Brand tokens + base styles |
 
 ## Auth flow
 
-1. User registers or logs in via Better Auth  
+1. Register or log in via Better Auth  
 2. Cookie session established  
-3. Register client calls `POST /api/onboarding` to create org + pipeline if missing  
-4. `requireMembership()` loads org context for server-rendered pages  
+3. Register calls `POST /api/onboarding` for org + default pipeline  
+4. `requireMembership()` loads org context on app pages  
 
-Sensitive account ops (password change, session revoke) go through Better Auth / `lib/actions/account.ts`.
+Account ops: `lib/actions/account.ts` + Better Auth (password, sessions).
 
 ## Data layer
 
-- **ORM:** Drizzle with `postgres` (postgres.js) driver  
-- **Migrations:** SQL files in `lib/db/migrations`, applied by `scripts/migrate.ts`  
-- **IDs:** Prefixed nanoid-style ids (`co_…`, `deal_…`, …) via `lib/id.ts`  
+- **ORM:** Drizzle + `postgres` (postgres.js)  
+- **Migrations:** `lib/db/migrations` via `scripts/migrate.ts`  
+- **IDs:** Prefixed nanoid-style ids via `lib/id.ts`  
 
 ## UI patterns
 
-See also [ui.md](./ui.md).
+See [ui.md](./ui.md).
 
-- **Brand** — teal primary (`brand` tokens); zinc neutrals  
-- **Data tables** — search, filters, columns, bulk select/delete  
-- **Searchable selects** — type-to-search; contacts filter by selected company  
-- **Notifications** — enquiries with status `new` (header + nav)  
-- **Avatars** — uploads or `/default-avatar.svg`; header + pipeline  
-- **Deal stage breadcrumb** — full stage trail on deal detail  
+- Zinc chrome + teal primary  
+- Data tables, searchable selects, company→contact cascade  
+- Notifications for enquiries with status `new`  
+- Deal stage breadcrumb on deal detail  
 
 ## Pipeline
 
-Default stages on org create:
+Default stages:
 
 `Lead → Qualified → Proposal → Negotiation → Won | Lost`
 
-Deal stage moves update `deals.stage_id` (Kanban uses `@dnd-kit`). Cards show assignee avatars when set. Deal detail shows a stage breadcrumb/trail.
+Kanban updates `deals.stage_id` (`@dnd-kit`). Cards show assignee avatars when set.
 
 ## Uploads
 
-Logos and avatars are stored under `public/uploads/` (Docker volume in Compose).
+- User files under `public/uploads/` (Compose volume; **gitignored**)  
+- Session required for `/uploads/*`  
+- Default avatar is static: `/default-avatar.svg` (public, not private)  
 
-- Filenames are scoped by user/org id  
-- Middleware requires a **session cookie** to fetch `/uploads/*` (not world-readable)  
-- User content is **gitignored** and must never be committed  
-- Default avatar is a **static** public asset: `/default-avatar.svg` (not under `/uploads`)
-
-## Deploy shape
+## Deploy
 
 ```
 docker compose
-  db   (postgres:16-alpine + volume; loopback port bind)
-  app  (build Next.js, migrate, next start; uploads volume)
+  db   (postgres:16-alpine; loopback port bind)
+  app  (build, migrate, next start; uploads volume)
 ```
 
 See [install.md](./install.md).
 
 ## Future directions
 
-- Separate `api` package if non-Next clients dominate  
-- Redis / job queue for email and imports  
-- Authenticated upload proxy with signed URLs if public CDN is needed  
-- Row-level security or stronger audit logging for multi-tenant SaaS  
+- Richer REST API / API tokens  
+- Webhooks, custom fields, light automations  
+- Optional SMTP and OAuth  
