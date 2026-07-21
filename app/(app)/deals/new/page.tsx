@@ -1,6 +1,7 @@
 import { listCompanies } from "@/lib/actions/companies";
 import { listContacts } from "@/lib/actions/contacts";
 import { getDefaultPipeline } from "@/lib/actions/deals";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { DealForm } from "@/components/deals/deal-form";
@@ -11,7 +12,8 @@ export default async function NewDealPage({
   searchParams: Promise<{ companyId?: string }>;
 }) {
   const { companyId } = await searchParams;
-  const [companies, contacts, pipeline] = await Promise.all([
+  const [{ organization }, companies, contacts, pipeline] = await Promise.all([
+    requireMembership(),
     listCompanies(),
     listContacts(),
     getDefaultPipeline(),
@@ -36,6 +38,7 @@ export default async function NewDealPage({
             }))}
             defaultCompanyId={companyId}
             defaultStageId={defaultStageId}
+            defaultCurrency={organization.currency}
           />
         </CardContent>
       </Card>

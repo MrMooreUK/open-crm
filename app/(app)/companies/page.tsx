@@ -1,10 +1,20 @@
 import Link from "next/link";
 import { listCompanies } from "@/lib/actions/companies";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { formatDate } from "@/lib/utils";
 
 export default async function CompaniesPage() {
-  const companies = await listCompanies();
+  const [{ organization }, companies] = await Promise.all([
+    requireMembership(),
+    listCompanies(),
+  ]);
+
+  const fmt = {
+    locale: organization.locale,
+    timezone: organization.timezone,
+    dateFormat: organization.dateFormat,
+  };
 
   return (
     <div>
@@ -61,7 +71,7 @@ export default async function CompaniesPage() {
                     {c.industry || "—"}
                   </td>
                   <td className="px-3 py-2.5 text-zinc-500">
-                    {formatDate(c.updatedAt)}
+                    {formatDate(c.updatedAt, fmt)}
                   </td>
                 </tr>
               ))}

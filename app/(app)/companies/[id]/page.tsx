@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCompany } from "@/lib/actions/companies";
+import { getCompany, listCompanies } from "@/lib/actions/companies";
 import { listActivitiesFor } from "@/lib/actions/activities";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { CompanyForm } from "@/components/companies/company-form";
 import { ActivityTimeline } from "@/components/activities/activity-timeline";
 import { formatCurrency, fullName } from "@/lib/utils";
 import { DeleteCompanyButton } from "@/components/companies/delete-company-button";
+import { CompanyQuickAddContact } from "@/components/contacts/company-quick-add-contact";
 
 export default async function CompanyDetailPage({
   params,
@@ -19,7 +20,10 @@ export default async function CompanyDetailPage({
   const company = await getCompany(id);
   if (!company) notFound();
 
-  const activityList = await listActivitiesFor({ companyId: id });
+  const [activityList, allCompanies] = await Promise.all([
+    listActivitiesFor({ companyId: id }),
+    listCompanies(),
+  ]);
 
   return (
     <div>
@@ -41,18 +45,23 @@ export default async function CompanyDetailPage({
           </Card>
 
           <Card>
-            <CardHeader className="flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle>Contacts</CardTitle>
-              <Link
-                href={`/contacts/new?companyId=${company.id}`}
-                className="text-xs font-medium text-zinc-600 hover:text-zinc-900"
-              >
-                Add contact
-              </Link>
+              <CompanyQuickAddContact
+                companyId={company.id}
+                companyName={company.name}
+                companies={allCompanies.map((c) => ({
+                  id: c.id,
+                  name: c.name,
+                  domain: c.domain,
+                }))}
+              />
             </CardHeader>
             <CardContent>
               {company.contacts.length === 0 ? (
-                <p className="text-sm text-zinc-500">No contacts linked.</p>
+                <p className="text-sm text-zinc-500">
+                  No contacts yet — use Add contact above.
+                </p>
               ) : (
                 <ul className="divide-y divide-zinc-100">
                   {company.contacts.map((c) => (

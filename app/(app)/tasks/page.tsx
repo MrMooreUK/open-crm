@@ -1,18 +1,25 @@
 import Link from "next/link";
 import { listOpenTasks } from "@/lib/actions/activities";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { formatDate, fullName } from "@/lib/utils";
 import { TaskCompleteButton } from "@/components/tasks/task-complete-button";
 
 export default async function TasksPage() {
-  const tasks = await listOpenTasks();
+  const [{ organization }, tasks] = await Promise.all([
+    requireMembership(),
+    listOpenTasks(),
+  ]);
+
+  const fmt = {
+    locale: organization.locale,
+    timezone: organization.timezone,
+    dateFormat: organization.dateFormat,
+  };
 
   return (
     <div>
-      <PageHeader
-        title="Tasks"
-        description={`${tasks.length} open`}
-      />
+      <PageHeader title="Tasks" description={`${tasks.length} open`} />
 
       {tasks.length === 0 ? (
         <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50/50 px-6 py-16 text-center">
@@ -67,7 +74,7 @@ export default async function TasksPage() {
                       )}
                     </td>
                     <td className="px-3 py-2.5 text-zinc-500">
-                      {formatDate(t.dueAt)}
+                      {formatDate(t.dueAt, fmt)}
                     </td>
                   </tr>
                 );

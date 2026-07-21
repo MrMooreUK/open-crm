@@ -39,9 +39,11 @@ type StageCol = {
 function DealItem({
   deal,
   isDragging,
+  locale = "en-US",
 }: {
   deal: DealCard;
   isDragging?: boolean;
+  locale?: string;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: deal.id,
@@ -76,7 +78,7 @@ function DealItem({
         {deal.company?.name ?? "No company"}
       </div>
       <div className="mt-1 text-xs font-medium text-zinc-700">
-        {formatCurrency(deal.amountCents, deal.currency)}
+        {formatCurrency(deal.amountCents, deal.currency, locale)}
       </div>
     </div>
   );
@@ -84,9 +86,13 @@ function DealItem({
 
 function StageColumn({
   stage,
+  currency,
+  locale,
   children,
 }: {
   stage: StageCol;
+  currency: string;
+  locale: string;
   children: React.ReactNode;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id });
@@ -108,7 +114,7 @@ function StageColumn({
           <span className="text-[11px] text-zinc-400">{stage.deals.length}</span>
         </div>
         <div className="mt-0.5 text-[11px] text-zinc-500">
-          {formatCurrency(total)}
+          {formatCurrency(total, currency, locale)}
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
@@ -118,7 +124,15 @@ function StageColumn({
   );
 }
 
-export function KanbanBoard({ stages: initialStages }: { stages: StageCol[] }) {
+export function KanbanBoard({
+  stages: initialStages,
+  defaultCurrency = "USD",
+  locale = "en-US",
+}: {
+  stages: StageCol[];
+  defaultCurrency?: string;
+  locale?: string;
+}) {
   const router = useRouter();
   const [stages, setStages] = useState(initialStages);
   const [activeDeal, setActiveDeal] = useState<DealCard | null>(null);
@@ -192,12 +206,18 @@ export function KanbanBoard({ stages: initialStages }: { stages: StageCol[] }) {
     >
       <div className="flex gap-3 overflow-x-auto pb-4">
         {stages.map((stage) => (
-          <StageColumn key={stage.id} stage={stage}>
+          <StageColumn
+            key={stage.id}
+            stage={stage}
+            currency={defaultCurrency}
+            locale={locale}
+          >
             {stage.deals.map((deal) => (
               <DealItem
                 key={deal.id}
                 deal={deal}
                 isDragging={activeDeal?.id === deal.id}
+                locale={locale}
               />
             ))}
           </StageColumn>

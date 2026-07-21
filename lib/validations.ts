@@ -21,9 +21,15 @@ export const companySchema = z.object({
 });
 
 export const contactSchema = z.object({
-  firstName: z.string().min(1, "First name is required").max(100),
+  firstName: z.string().min(1, "Name is required").max(100),
   lastName: z.string().max(100).optional().or(z.literal("")),
-  email: z.string().email().optional().or(z.literal("")),
+  email: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || z.string().email().safeParse(v).success, {
+      message: "Invalid email",
+    }),
   phone: z.string().max(50).optional().or(z.literal("")),
   title: z.string().max(100).optional().or(z.literal("")),
   companyId: z.string().optional().or(z.literal("")),
@@ -56,5 +62,14 @@ export const inviteSchema = z.object({
 });
 
 export const orgSettingsSchema = z.object({
-  name: z.string().min(1).max(100),
+  name: z.string().min(1, "Name is required").max(100),
+  timezone: z.string().min(1).max(64),
+  currency: z
+    .string()
+    .length(3, "Currency must be a 3-letter code")
+    .transform((v) => v.toUpperCase()),
+  locale: z.string().min(2).max(16),
+  dateFormat: z.enum(["short", "medium", "long", "full"]),
+  weekStartsOn: z.coerce.number().int().min(0).max(6),
+  fiscalYearStartMonth: z.coerce.number().int().min(1).max(12),
 });

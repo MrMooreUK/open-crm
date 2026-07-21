@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { getDashboardStats } from "@/lib/actions/dashboard";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate, fullName } from "@/lib/utils";
 
 export default async function DashboardPage() {
-  const stats = await getDashboardStats();
+  const [{ organization }, stats] = await Promise.all([
+    requireMembership(),
+    getDashboardStats(),
+  ]);
+
+  const fmt = {
+    locale: organization.locale,
+    timezone: organization.timezone,
+    dateFormat: organization.dateFormat,
+  };
 
   return (
     <div>
@@ -19,7 +29,11 @@ export default async function DashboardPage() {
         <StatCard label="Open deals" value={String(stats.openDeals)} />
         <StatCard
           label="Pipeline value"
-          value={formatCurrency(stats.pipelineValueCents)}
+          value={formatCurrency(
+            stats.pipelineValueCents,
+            organization.currency,
+            organization.locale
+          )}
         />
         <StatCard label="Companies" value={String(stats.companies)} />
         <StatCard label="Open tasks" value={String(stats.openTasks)} />
@@ -51,7 +65,11 @@ export default async function DashboardPage() {
                       </Link>
                       <div className="text-xs text-zinc-500">
                         {deal.company?.name ?? "No company"} ·{" "}
-                        {formatCurrency(deal.amountCents, deal.currency)}
+                        {formatCurrency(
+                          deal.amountCents,
+                          deal.currency,
+                          organization.locale
+                        )}
                       </div>
                     </div>
                     <Badge variant="secondary">{deal.stage.name}</Badge>
@@ -80,7 +98,7 @@ export default async function DashboardPage() {
                         {a.type}
                       </Badge>
                       <span className="text-xs text-zinc-400">
-                        {formatDate(a.createdAt)}
+                        {formatDate(a.createdAt, fmt)}
                       </span>
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm text-zinc-700">

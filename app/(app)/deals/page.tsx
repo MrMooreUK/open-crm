@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { listDeals } from "@/lib/actions/deals";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default async function DealsPage() {
-  const deals = await listDeals();
+  const [{ organization }, deals] = await Promise.all([
+    requireMembership(),
+    listDeals(),
+  ]);
+
+  const fmt = {
+    locale: organization.locale,
+    timezone: organization.timezone,
+    dateFormat: organization.dateFormat,
+  };
 
   return (
     <div>
@@ -62,7 +72,11 @@ export default async function DealsPage() {
                     {d.company?.name || "—"}
                   </td>
                   <td className="px-3 py-2.5 text-zinc-600">
-                    {formatCurrency(d.amountCents, d.currency)}
+                    {formatCurrency(
+                      d.amountCents,
+                      d.currency,
+                      organization.locale
+                    )}
                   </td>
                   <td className="px-3 py-2.5">
                     <Badge
@@ -78,7 +92,7 @@ export default async function DealsPage() {
                     </Badge>
                   </td>
                   <td className="px-3 py-2.5 text-zinc-500">
-                    {formatDate(d.expectedCloseAt)}
+                    {formatDate(d.expectedCloseAt, fmt)}
                   </td>
                 </tr>
               ))}

@@ -16,6 +16,12 @@ export async function updateOrganization(formData: FormData) {
 
   const parsed = orgSettingsSchema.safeParse({
     name: formData.get("name"),
+    timezone: formData.get("timezone") || "UTC",
+    currency: formData.get("currency") || "USD",
+    locale: formData.get("locale") || "en-US",
+    dateFormat: formData.get("dateFormat") || "medium",
+    weekStartsOn: formData.get("weekStartsOn") ?? 1,
+    fiscalYearStartMonth: formData.get("fiscalYearStartMonth") ?? 1,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -23,10 +29,24 @@ export async function updateOrganization(formData: FormData) {
 
   await db
     .update(organizations)
-    .set({ name: parsed.data.name, updatedAt: new Date() })
+    .set({
+      name: parsed.data.name,
+      timezone: parsed.data.timezone,
+      currency: parsed.data.currency,
+      locale: parsed.data.locale,
+      dateFormat: parsed.data.dateFormat,
+      weekStartsOn: parsed.data.weekStartsOn,
+      fiscalYearStartMonth: parsed.data.fiscalYearStartMonth,
+      updatedAt: new Date(),
+    })
     .where(eq(organizations.id, organizationId));
 
   revalidatePath("/settings");
+  revalidatePath("/");
+  revalidatePath("/deals");
+  revalidatePath("/pipeline");
+  revalidatePath("/tasks");
+  revalidatePath("/companies");
   return { ok: true };
 }
 

@@ -1,14 +1,12 @@
 import { requireMembership } from "@/lib/session";
-import {
-  listInvites,
-  listMembers,
-} from "@/lib/actions/settings";
+import { listInvites, listMembers } from "@/lib/actions/settings";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { OrgSettingsForm } from "@/components/settings/org-settings-form";
 import { InviteForm } from "@/components/settings/invite-form";
 import { formatDate } from "@/lib/utils";
+import { DEFAULT_ORG_SETTINGS } from "@/lib/settings-options";
 
 export default async function SettingsPage() {
   const { organization, role } = await requireMembership();
@@ -17,19 +15,43 @@ export default async function SettingsPage() {
     listInvites(),
   ]);
 
+  const formatOpts = {
+    locale: organization.locale ?? DEFAULT_ORG_SETTINGS.locale,
+    timezone: organization.timezone ?? DEFAULT_ORG_SETTINGS.timezone,
+    dateFormat: organization.dateFormat ?? DEFAULT_ORG_SETTINGS.dateFormat,
+  };
+
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title="Settings" description="Organization and team" />
+      <PageHeader
+        title="Settings"
+        description="Organization, regional preferences, and team"
+      />
 
       <div className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle>Organization</CardTitle>
+            <CardTitle>Workspace</CardTitle>
           </CardHeader>
           <CardContent>
             <OrgSettingsForm
-              name={organization.name}
               canEdit={role === "owner"}
+              values={{
+                name: organization.name,
+                timezone:
+                  organization.timezone ?? DEFAULT_ORG_SETTINGS.timezone,
+                currency:
+                  organization.currency ?? DEFAULT_ORG_SETTINGS.currency,
+                locale: organization.locale ?? DEFAULT_ORG_SETTINGS.locale,
+                dateFormat:
+                  organization.dateFormat ?? DEFAULT_ORG_SETTINGS.dateFormat,
+                weekStartsOn:
+                  organization.weekStartsOn ??
+                  DEFAULT_ORG_SETTINGS.weekStartsOn,
+                fiscalYearStartMonth:
+                  organization.fiscalYearStartMonth ??
+                  DEFAULT_ORG_SETTINGS.fiscalYearStartMonth,
+              }}
             />
           </CardContent>
         </Card>
@@ -80,7 +102,7 @@ export default async function SettingsPage() {
                       >
                         <div className="font-medium">{inv.email}</div>
                         <div className="text-xs text-zinc-500">
-                          Expires {formatDate(inv.expiresAt)} ·{" "}
+                          Expires {formatDate(inv.expiresAt, formatOpts)} ·{" "}
                           <code className="rounded bg-white px-1 text-[11px]">
                             /invite/{inv.token}
                           </code>

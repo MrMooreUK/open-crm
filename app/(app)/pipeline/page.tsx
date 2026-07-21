@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { getPipelineBoard } from "@/lib/actions/deals";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { KanbanBoard } from "@/components/pipeline/kanban-board";
 
 export default async function PipelinePage() {
-  const board = await getPipelineBoard();
+  const [{ organization }, board] = await Promise.all([
+    requireMembership(),
+    getPipelineBoard(),
+  ]);
 
   if (!board) {
     return (
@@ -30,6 +34,8 @@ export default async function PipelinePage() {
         }
       />
       <KanbanBoard
+        defaultCurrency={organization.currency}
+        locale={organization.locale}
         stages={board.stages.map((s) => ({
           id: s.id,
           name: s.name,

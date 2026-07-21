@@ -89,6 +89,20 @@ export const organizations = pgTable(
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
+    /** IANA timezone, e.g. America/New_York */
+    timezone: text("timezone").notNull().default("UTC"),
+    /** Default ISO 4217 currency for new deals, e.g. USD */
+    currency: text("currency").notNull().default("USD"),
+    /** BCP 47 locale for number/date formatting, e.g. en-US */
+    locale: text("locale").notNull().default("en-US"),
+    /** Date display style */
+    dateFormat: text("date_format").notNull().default("medium"),
+    /** 0 = Sunday, 1 = Monday */
+    weekStartsOn: integer("week_starts_on").notNull().default(1),
+    /** 1–12, fiscal year start month */
+    fiscalYearStartMonth: integer("fiscal_year_start_month")
+      .notNull()
+      .default(1),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

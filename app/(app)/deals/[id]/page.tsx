@@ -3,6 +3,7 @@ import { getDeal, getDefaultPipeline } from "@/lib/actions/deals";
 import { listCompanies } from "@/lib/actions/companies";
 import { listContacts } from "@/lib/actions/contacts";
 import { listActivitiesFor } from "@/lib/actions/activities";
+import { requireMembership } from "@/lib/session";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,12 +21,14 @@ export default async function DealDetailPage({
   const deal = await getDeal(id);
   if (!deal) notFound();
 
-  const [companies, contacts, pipeline, activityList] = await Promise.all([
-    listCompanies(),
-    listContacts(),
-    getDefaultPipeline(),
-    listActivitiesFor({ dealId: id }),
-  ]);
+  const [{ organization }, companies, contacts, pipeline, activityList] =
+    await Promise.all([
+      requireMembership(),
+      listCompanies(),
+      listContacts(),
+      getDefaultPipeline(),
+      listActivitiesFor({ dealId: id }),
+    ]);
 
   const stages = pipeline?.stages ?? [];
 
@@ -33,7 +36,7 @@ export default async function DealDetailPage({
     <div>
       <PageHeader
         title={deal.title}
-        description={`${formatCurrency(deal.amountCents, deal.currency)} · ${deal.stage.name}`}
+        description={`${formatCurrency(deal.amountCents, deal.currency, organization.locale)} · ${deal.stage.name}`}
         actions={
           <div className="flex items-center gap-2">
             <Badge
@@ -68,6 +71,7 @@ export default async function DealDetailPage({
                   firstName: c.firstName,
                   lastName: c.lastName,
                 }))}
+                defaultCurrency={organization.currency}
               />
             </CardContent>
           </Card>

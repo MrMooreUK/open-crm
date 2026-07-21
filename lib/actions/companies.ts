@@ -71,6 +71,50 @@ export async function createCompany(formData: FormData) {
   return { id };
 }
 
+/** One-field company create for pickers / quick-add flows */
+export async function quickCreateCompany(name: string, domain?: string) {
+  const { organizationId, user } = await requireMembership();
+  const trimmed = name.trim();
+  if (!trimmed) return { error: "Company name is required" };
+
+  // Reuse existing company with same name (case-insensitive)
+  const existing = await db.query.companies.findFirst({
+    where: and(
+      eq(companies.organizationId, organizationId),
+      ilike(companies.name, trimmed)
+    ),
+  });
+  if (existing) {
+    return { id: existing.id, name: existing.name, existing: true as const };
+  }
+
+  const id = createId("co");
+  await db.insert(companies).values({
+    id,
+    organizationId,
+    name: trimmed,
+    domain: domain?.trim() || null,
+    ownerId: user.id,
+  });
+
+  revalidatePath("/companies");
+  revalidatePath("/");
+  return { id, name: trimmed, existing: false as const };
+}
+
+/** Find company by exact domain or name for smart linking */
+export async function findCompanyByDomain(domain: string) {
+  const { organizationId } = await requireMembership();
+  const d = domain.trim().toLowerCase();
+  if (!d) return null;
+  return db.query.companies.findFirst({
+    where: and(
+      eq(companies.organizationId, organizationId),
+      or(ilike(companies.domain, d), ilike(companies.website, `%${d}%`))
+    ),
+  });
+}
+
 export async function updateCompany(id: string, formData: FormData) {
   const { organizationId } = await requireMembership();
   const parsed = companySchema.safeParse({

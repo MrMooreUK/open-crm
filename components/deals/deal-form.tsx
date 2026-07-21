@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createDeal, updateDeal } from "@/lib/actions/deals";
+import { CURRENCIES } from "@/lib/settings-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,7 @@ export function DealForm({
   contacts,
   defaultCompanyId,
   defaultStageId,
+  defaultCurrency = "USD",
 }: {
   deal?: Deal;
   stages: { id: string; name: string }[];
@@ -36,6 +38,7 @@ export function DealForm({
   contacts: { id: string; firstName: string; lastName: string }[];
   defaultCompanyId?: string;
   defaultStageId?: string;
+  defaultCurrency?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -90,11 +93,17 @@ export function DealForm({
           <Select
             id="currency"
             name="currency"
-            defaultValue={deal?.currency ?? "USD"}
+            defaultValue={deal?.currency ?? defaultCurrency}
           >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
+            {deal?.currency &&
+            !CURRENCIES.some((c) => c.code === deal.currency) ? (
+              <option value={deal.currency}>{deal.currency}</option>
+            ) : null}
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code}
+              </option>
+            ))}
           </Select>
         </div>
       </div>
