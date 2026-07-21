@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.env
+.env.local
+*.md
+!README.md
+.open-crm-grok-plan.md
+open-crm-grok-plan.md
+AGENTS.md
+CLAUDE.md
+.gitignore
+.DS_Store

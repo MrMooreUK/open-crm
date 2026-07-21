@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Keep default output for simpler Docker (full node_modules + next start)
 };
 
 export default nextConfig;

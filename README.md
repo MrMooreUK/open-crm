@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# open-crm
 
-## Getting Started
+**Own your pipeline.** A clean, self-hosted open-source CRM for small teams.
 
-First, run the development server:
+- Companies, contacts, deals & pipeline board
+- Notes, tasks & activity timelines
+- Global search and a simple dashboard
+- Invite teammates
+- One-command install with Docker
+
+## Quick start (Docker)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-org/open-crm.git
+cd open-crm
+docker compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open **http://localhost:3000**, create an account, and start selling.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> For production, set a strong `BETTER_AUTH_SECRET` in a `.env` file (see `.env.example`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local development
 
-## Learn More
+Requires Node 22+ and Docker (for Postgres).
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# start database
+docker compose up -d db
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# install & migrate
+cp .env.example .env
+npm install
+npm run db:migrate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# run app
+npm run dev
+```
 
-## Deploy on Vercel
+Optional demo data (after you register once):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run db:seed
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| App | Next.js (App Router) |
+| DB | PostgreSQL 16 + Drizzle ORM |
+| Auth | Better Auth (email / password) |
+| UI | Tailwind CSS, minimal dense layout |
+
+## Features
+
+- **Companies & contacts** — full CRUD, linked records
+- **Deals & pipeline** — Kanban board with drag-and-drop stage moves
+- **Activities** — notes, calls, emails, meetings, tasks on any record
+- **Tasks** — open task list with complete toggle
+- **Search** — companies, contacts, deals
+- **Settings** — org name, members, invite links
+- **API** — `GET /api/health`, `GET /api/v1/me`, Better Auth under `/api/auth/*`
+
+## Environment
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Postgres connection string |
+| `BETTER_AUTH_SECRET` | Session signing secret (32+ chars) |
+| `BETTER_AUTH_URL` | Public app URL (e.g. `http://localhost:3000`) |
+| `APP_URL` | Same as above for redirects |
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Dev server |
+| `npm run build` / `start` | Production |
+| `npm run db:generate` | Generate migrations from schema |
+| `npm run db:migrate` | Apply migrations |
+| `npm run db:seed` | Demo data |
+| `npm run db:studio` | Drizzle Studio |
+
+## License
+
+[AGPL-3.0](./LICENSE)
