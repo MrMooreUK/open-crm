@@ -200,7 +200,10 @@ open-crm/
 | `GET /api/v1/contacts/export?format=` | session | Contact export (`csv`, `tsv`, `json`, `vcf`, `xlsx`) |
 | `/api/auth/*` | — | Better Auth (register, login, session, password) |
 
-Most CRM mutations are **Server Actions** in `lib/actions/*` (first-party UI). Full notes: [docs/api.md](./docs/api.md).
+Most CRM mutations are **Server Actions** in `lib/actions/*` (first-party UI).
+
+**In the running app:** sidebar → **Organization → Documentation** (`/docs`) — accordion for install, API, workflows, and more. Deep-link e.g. `/docs?section=api`.  
+Repo markdown: [docs/](./docs/README.md).
 
 ---
 

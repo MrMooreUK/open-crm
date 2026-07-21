@@ -1,5 +1,14 @@
 # Documentation
 
+## In the running app
+
+Sign in → **Organization → Documentation** (`/docs`).
+
+Content is shown in an **accordion** (overview, install, architecture, API, contacts I/O, enquiries & quotes, UI, security, roadmap).  
+Deep-link a section: `/docs?section=api`.
+
+## Markdown in this repo
+
 | Guide | Description |
 |-------|-------------|
 | [Install](./install.md) | Docker Compose self-host & production notes |

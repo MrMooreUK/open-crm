@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
+  BookOpen,
   Building2,
   CheckSquare,
   ChevronDown,
@@ -79,6 +80,7 @@ const navSections: NavSection[] = [
       { href: "/settings/regional", label: "Regional", icon: Globe2 },
       { href: "/settings/team", label: "Team", icon: Users },
       { href: "/account", label: "Your account", icon: Settings },
+      { href: "/docs", label: "Documentation", icon: BookOpen },
     ],
   },
 ];

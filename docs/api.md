@@ -2,6 +2,8 @@
 
 open-crm is still **UI-first**. The HTTP surface below is the stable baseline for health checks and integrations.
 
+**In the app:** Organization → **Documentation** (`/docs`), open the **HTTP API** accordion (or `/docs?section=api`).
+
 Base URL (local): `http://localhost:3000`
 
 ## Authentication

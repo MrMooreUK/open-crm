@@ -122,20 +122,25 @@ export default async function AccountPage() {
           <CardHeader>
             <CardTitle>Workspace</CardTitle>
             <CardDescription>
-              Organization settings are managed separately
+              Organization settings and developer docs
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="mb-3 text-sm text-zinc-600">
+          <CardContent className="space-y-3">
+            <p className="text-sm text-zinc-600">
               Company profile, branding, regional defaults, and team invites
               live under organization settings.
             </p>
-            <Link
-              href="/settings"
-              className="text-sm font-medium text-zinc-900 underline-offset-4 hover:underline"
-            >
-              Open organization settings →
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/settings" className="btn-primary btn-primary-sm">
+                Organization settings
+              </Link>
+              <Link
+                href="/docs"
+                className="inline-flex h-8 items-center rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Documentation
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
