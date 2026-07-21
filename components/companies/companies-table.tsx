@@ -8,6 +8,8 @@ import type { DataTableColumn } from "@/components/data-table/types";
 import { deleteCompanies } from "@/lib/actions/companies";
 import { formatDate } from "@/lib/utils";
 
+const COMPANY_LABELS = { singular: "company", plural: "companies" } as const;
+
 export type CompanyRow = {
   id: string;
   name: string;
@@ -110,9 +112,8 @@ export function CompaniesTable({
     },
   ];
 
-  const resourceLabels = { singular: "company", plural: "companies" };
   const bulkActions = useMemo(
-    () => [makeBulkDeleteAction(resourceLabels, deleteCompanies)],
+    () => [makeBulkDeleteAction(COMPANY_LABELS, deleteCompanies)],
     []
   );
 
@@ -122,7 +123,7 @@ export function CompaniesTable({
       columns={columns}
       rows={companies}
       searchPlaceholder="Search companies…"
-      resourceLabels={resourceLabels}
+      resourceLabels={COMPANY_LABELS}
       bulkActions={bulkActions}
     />
   );

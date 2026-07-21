@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { daysUntil } from "@/lib/quotes/defaults";
 
+const QUOTE_LABELS = { singular: "quote", plural: "quotes" } as const;
+
 const statusVariant: Record<
   string,
   "secondary" | "success" | "danger" | "outline"
@@ -158,9 +160,8 @@ export function QuotesTable({
     },
   ];
 
-  const resourceLabels = { singular: "quote", plural: "quotes" };
   const bulkActions = useMemo(
-    () => [makeBulkDeleteAction(resourceLabels, deleteQuotes)],
+    () => [makeBulkDeleteAction(QUOTE_LABELS, deleteQuotes)],
     []
   );
 
@@ -170,7 +171,7 @@ export function QuotesTable({
       columns={columns}
       rows={quotes}
       searchPlaceholder="Search quotes…"
-      resourceLabels={resourceLabels}
+      resourceLabels={QUOTE_LABELS}
       bulkActions={bulkActions}
     />
   );

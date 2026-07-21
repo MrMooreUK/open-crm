@@ -9,6 +9,8 @@ import { deleteDeals } from "@/lib/actions/deals";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
+const DEAL_LABELS = { singular: "deal", plural: "deals" } as const;
+
 export type DealRow = {
   id: string;
   title: string;
@@ -145,9 +147,8 @@ export function DealsTable({
     },
   ];
 
-  const resourceLabels = { singular: "deal", plural: "deals" };
   const bulkActions = useMemo(
-    () => [makeBulkDeleteAction(resourceLabels, deleteDeals)],
+    () => [makeBulkDeleteAction(DEAL_LABELS, deleteDeals)],
     []
   );
 
@@ -157,7 +158,7 @@ export function DealsTable({
       columns={columns}
       rows={deals}
       searchPlaceholder="Search deals…"
-      resourceLabels={resourceLabels}
+      resourceLabels={DEAL_LABELS}
       bulkActions={bulkActions}
     />
   );

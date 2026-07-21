@@ -9,6 +9,8 @@ import { deleteEnquiries } from "@/lib/actions/enquiries";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
+const ENQUIRY_LABELS = { singular: "enquiry", plural: "enquiries" } as const;
+
 const statusVariant: Record<
   string,
   "secondary" | "success" | "danger" | "outline"
@@ -170,9 +172,8 @@ export function EnquiriesTable({
     },
   ];
 
-  const resourceLabels = { singular: "enquiry", plural: "enquiries" };
   const bulkActions = useMemo(
-    () => [makeBulkDeleteAction(resourceLabels, deleteEnquiries)],
+    () => [makeBulkDeleteAction(ENQUIRY_LABELS, deleteEnquiries)],
     []
   );
 
@@ -182,7 +183,7 @@ export function EnquiriesTable({
       columns={columns}
       rows={enquiries}
       searchPlaceholder="Search enquiries…"
-      resourceLabels={resourceLabels}
+      resourceLabels={ENQUIRY_LABELS}
       bulkActions={bulkActions}
     />
   );

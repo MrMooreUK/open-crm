@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -219,19 +219,16 @@ export function DataTable<T extends { id: string }>({
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // Drop selection for rows that no longer exist
-  useEffect(() => {
-    const valid = new Set(rows.map((r) => r.id));
-    setSelected((prev) => {
-      let changed = false;
-      const next = new Set<string>();
-      for (const id of prev) {
-        if (valid.has(id)) next.add(id);
-        else changed = true;
-      }
-      return changed ? next : prev;
-    });
-  }, [rows]);
+  const rowIdSet = useMemo(() => new Set(rows.map((r) => r.id)), [rows]);
+
+  /** Selection pruned to rows that still exist (no setState-in-effect) */
+  const activeSelected = useMemo(() => {
+    const next = new Set<string>();
+    for (const id of selected) {
+      if (rowIdSet.has(id)) next.add(id);
+    }
+    return next;
+  }, [selected, rowIdSet]);
 
   const orderedColumns = useMemo(() => {
     const byId = new Map(columns.map((c) => [c.id, c]));
@@ -321,12 +318,15 @@ export function DataTable<T extends { id: string }>({
 
   const allVisibleSelected =
     processedIds.length > 0 &&
-    processedIds.every((id) => selected.has(id));
+    processedIds.every((id) => activeSelected.has(id));
   const someVisibleSelected =
-    processedIds.some((id) => selected.has(id)) && !allVisibleSelected;
+    processedIds.some((id) => activeSelected.has(id)) && !allVisibleSelected;
 
-  const selectedCount = selected.size;
-  const selectedIds = useMemo(() => Array.from(selected), [selected]);
+  const selectedCount = activeSelected.size;
+  const selectedIds = useMemo(
+    () => Array.from(activeSelected),
+    [activeSelected]
+  );
 
   function clearFilters() {
     setQuery("");
@@ -681,7 +681,7 @@ export function DataTable<T extends { id: string }>({
                   </tr>
                 ) : (
                   processed.map((row) => {
-                    const isSelected = selected.has(row.id);
+                    const isSelected = activeSelected.has(row.id);
                     return (
                       <tr
                         key={row.id}

@@ -419,7 +419,13 @@ docker compose up -d`}</Pre>
     },
   ];
 
+  // key remounts accordion when deep-link section changes (no setState-in-effect)
+  const openId = defaultSection ?? "overview";
   return (
-    <Accordion items={items} defaultOpenId={defaultSection ?? "overview"} />
+    <Accordion
+      key={openId}
+      items={items}
+      defaultOpenId={openId}
+    />
   );
 }

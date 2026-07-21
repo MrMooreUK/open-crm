@@ -8,6 +8,8 @@ import type { DataTableColumn } from "@/components/data-table/types";
 import { deleteContacts } from "@/lib/actions/contacts";
 import { fullName, formatDate } from "@/lib/utils";
 
+const CONTACT_LABELS = { singular: "contact", plural: "contacts" } as const;
+
 export type ContactRow = {
   id: string;
   firstName: string;
@@ -118,9 +120,8 @@ export function ContactsTable({
     },
   ];
 
-  const resourceLabels = { singular: "contact", plural: "contacts" };
   const bulkActions = useMemo(
-    () => [makeBulkDeleteAction(resourceLabels, deleteContacts)],
+    () => [makeBulkDeleteAction(CONTACT_LABELS, deleteContacts)],
     []
   );
 
@@ -130,7 +131,7 @@ export function ContactsTable({
       columns={columns}
       rows={contacts}
       searchPlaceholder="Search contacts…"
-      resourceLabels={resourceLabels}
+      resourceLabels={CONTACT_LABELS}
       bulkActions={bulkActions}
     />
   );

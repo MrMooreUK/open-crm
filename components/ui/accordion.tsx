@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,17 +24,12 @@ export function Accordion({
   className?: string;
 }) {
   const [open, setOpen] = useState<Set<string>>(() => {
-    const id = defaultOpenId && items.some((i) => i.id === defaultOpenId)
-      ? defaultOpenId
-      : items[0]?.id;
+    const id =
+      defaultOpenId && items.some((i) => i.id === defaultOpenId)
+        ? defaultOpenId
+        : items[0]?.id;
     return id ? new Set([id]) : new Set();
   });
-
-  useEffect(() => {
-    if (!defaultOpenId) return;
-    if (!items.some((i) => i.id === defaultOpenId)) return;
-    setOpen(new Set([defaultOpenId]));
-  }, [defaultOpenId, items]);
 
   function toggle(id: string) {
     setOpen((prev) => {
@@ -44,7 +39,6 @@ export function Accordion({
         else next.add(id);
         return next;
       }
-      // Single-open: click open panel to close; click another to switch
       if (prev.has(id)) return new Set();
       return new Set([id]);
     });
