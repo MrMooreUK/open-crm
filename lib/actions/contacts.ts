@@ -8,6 +8,7 @@ import { createId } from "@/lib/id";
 import { requireMembership } from "@/lib/session";
 import { contactSchema } from "@/lib/validations";
 import { quickCreateCompany } from "@/lib/actions/companies";
+import { companyBelongsToOrganization } from "@/lib/tenant";
 
 function splitName(fullName: string) {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -49,7 +50,13 @@ async function resolveCompanyId(params: {
   companyName?: string;
   email?: string;
 }) {
-  if (params.companyId) return params.companyId;
+  if (params.companyId) {
+    const company = await companyBelongsToOrganization(
+      params.companyId,
+      params.organizationId
+    );
+    return company ? company.id : null;
+  }
 
   if (params.companyName) {
     const created = await quickCreateCompany(params.companyName);

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { signIn } from "@/lib/auth-client";
+import { safeNextPath } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/";
+  const next = safeNextPath(searchParams.get("next"));
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -31,7 +32,7 @@ function LoginForm() {
       return;
     }
 
-    router.push(next.startsWith("/") ? next : "/");
+    router.push(next);
     router.refresh();
   }
 

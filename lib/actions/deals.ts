@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { deals, pipelines, stages } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { requireMembership } from "@/lib/session";
+import { stageBelongsToOrganization, validateOptionalCrmLinks } from "@/lib/tenant";
 import { dealSchema } from "@/lib/validations";
 
 export async function listDeals(query?: string) {
@@ -93,6 +94,16 @@ export async function createDeal(formData: FormData) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
+  const stage = await stageBelongsToOrganization(parsed.data.stageId, organizationId);
+  if (!stage) return { error: "Stage not found" };
+
+  const links = await validateOptionalCrmLinks({
+    organizationId,
+    companyId: parsed.data.companyId || null,
+    contactId: parsed.data.contactId || null,
+  });
+  if ("error" in links) return links;
+
   const id = createId("deal");
   const amountCents = Math.round(Number(parsed.data.amount) * 100);
 
@@ -134,6 +145,16 @@ export async function updateDeal(id: string, formData: FormData) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
+  const stage = await stageBelongsToOrganization(parsed.data.stageId, organizationId);
+  if (!stage) return { error: "Stage not found" };
+
+  const links = await validateOptionalCrmLinks({
+    organizationId,
+    companyId: parsed.data.companyId || null,
+    contactId: parsed.data.contactId || null,
+  });
+  if ("error" in links) return links;
+
   const amountCents = Math.round(Number(parsed.data.amount) * 100);
 
   await db
@@ -161,6 +182,9 @@ export async function updateDeal(id: string, formData: FormData) {
 
 export async function moveDeal(dealId: string, stageId: string) {
   const { organizationId } = await requireMembership();
+  const stage = await stageBelongsToOrganization(stageId, organizationId);
+  if (!stage) return { error: "Stage not found" };
+
   await db
     .update(deals)
     .set({ stageId, updatedAt: new Date() })

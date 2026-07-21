@@ -21,36 +21,38 @@ export async function createOrganizationForUser(params: {
   const orgId = createId("org");
   const pipelineId = createId("pipe");
 
-  await db.insert(organizations).values({
-    id: orgId,
-    name: params.organizationName.trim(),
-    slug,
-  });
+  await db.transaction(async (tx) => {
+    await tx.insert(organizations).values({
+      id: orgId,
+      name: params.organizationName.trim(),
+      slug,
+    });
 
-  await db.insert(members).values({
-    id: createId("mem"),
-    organizationId: orgId,
-    userId: params.userId,
-    role: "owner",
-  });
+    await tx.insert(members).values({
+      id: createId("mem"),
+      organizationId: orgId,
+      userId: params.userId,
+      role: "owner",
+    });
 
-  await db.insert(pipelines).values({
-    id: pipelineId,
-    organizationId: orgId,
-    name: "Sales",
-    isDefault: true,
-  });
+    await tx.insert(pipelines).values({
+      id: pipelineId,
+      organizationId: orgId,
+      name: "Sales",
+      isDefault: true,
+    });
 
-  await db.insert(stages).values(
-    DEFAULT_STAGES.map((s) => ({
-      id: createId("stg"),
-      pipelineId,
-      name: s.name,
-      position: s.position,
-      isWon: s.isWon,
-      isLost: s.isLost,
-    }))
-  );
+    await tx.insert(stages).values(
+      DEFAULT_STAGES.map((s) => ({
+        id: createId("stg"),
+        pipelineId,
+        name: s.name,
+        position: s.position,
+        isWon: s.isWon,
+        isLost: s.isLost,
+      }))
+    );
+  });
 
   return { organizationId: orgId, slug };
 }

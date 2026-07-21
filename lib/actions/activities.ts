@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { activities } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { requireMembership } from "@/lib/session";
+import { validateOptionalCrmLinks } from "@/lib/tenant";
 import { activitySchema } from "@/lib/validations";
 
 function revalidateRelated(data: {
@@ -69,6 +70,14 @@ export async function createActivity(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+
+  const links = await validateOptionalCrmLinks({
+    organizationId,
+    companyId: parsed.data.companyId || null,
+    contactId: parsed.data.contactId || null,
+    dealId: parsed.data.dealId || null,
+  });
+  if ("error" in links) return links;
 
   const id = createId("act");
   await db.insert(activities).values({

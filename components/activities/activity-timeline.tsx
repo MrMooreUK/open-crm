@@ -49,7 +49,7 @@ export function ActivityTimeline({
     const result = await createActivity(formData);
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
