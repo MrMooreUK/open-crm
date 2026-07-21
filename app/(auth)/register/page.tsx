@@ -8,6 +8,7 @@ import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BrandWordmark } from "@/components/ui/brand-mark";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function RegisterPage() {
@@ -56,13 +57,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card>
+    <Card className="border-zinc-200/80 shadow-md shadow-teal-900/5">
       <CardHeader>
-        <div className="mb-2 flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900 text-[11px] font-bold text-white">
-            OC
-          </div>
-          <span className="text-sm font-semibold">open-crm</span>
+        <div className="mb-2">
+          <BrandWordmark size="md" />
         </div>
         <CardTitle className="text-base">Create account</CardTitle>
         <CardDescription>Own your pipeline in minutes</CardDescription>

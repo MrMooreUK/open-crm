@@ -75,3 +75,9 @@ organization branding → quote print header/footer
 ## Bulk actions
 
 Enquiries and quotes lists support multi-select and bulk delete (same data-table pattern as contacts/deals/companies).
+
+## Related: deals
+
+On a **deal detail** page, a **stage breadcrumb** shows the full pipeline path
+(e.g. Pipeline → Lead → Qualified → **Proposal** → …) so the current stage is
+obvious without opening the Kanban board. See [ui.md](./ui.md).

@@ -92,7 +92,7 @@ export default async function EnquiryDetailPage({
               href={`/quotes/new?enquiryId=${enquiry.id}${
                 enquiry.companyId ? `&companyId=${enquiry.companyId}` : ""
               }${enquiry.contactId ? `&contactId=${enquiry.contactId}` : ""}`}
-              className="inline-flex h-8 items-center rounded-md bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
+              className="btn-primary btn-primary-sm"
             >
               Generate quote
             </Link>

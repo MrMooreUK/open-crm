@@ -6,6 +6,8 @@ const publicPaths = [
   "/register",
   "/api/auth",
   "/api/health",
+  // Bundled static defaults (not user uploads)
+  "/default-avatar.svg",
 ];
 
 export function middleware(request: NextRequest) {

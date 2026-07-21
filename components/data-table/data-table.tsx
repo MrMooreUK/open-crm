@@ -428,7 +428,7 @@ export function DataTable<T extends { id: string }>({
             <Filter className="h-3.5 w-3.5" />
             Filters
             {activeFilterCount > 0 ? (
-              <span className="ml-0.5 rounded bg-zinc-900 px-1.5 py-0.5 text-[10px] font-medium text-white">
+              <span className="ml-0.5 rounded bg-brand px-1.5 py-0.5 text-[10px] font-medium text-brand-foreground">
                 {activeFilterCount}
               </span>
             ) : null}

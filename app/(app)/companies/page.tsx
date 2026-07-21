@@ -24,7 +24,7 @@ export default async function CompaniesPage() {
         actions={
           <Link
             href="/companies/new"
-            className="inline-flex h-9 items-center rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white hover:bg-zinc-800"
+            className="btn-primary"
           >
             New company
           </Link>
@@ -39,7 +39,7 @@ export default async function CompaniesPage() {
           </p>
           <Link
             href="/companies/new"
-            className="mt-4 inline-flex h-8 items-center rounded-md bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
+            className="mt-4 btn-primary btn-primary-sm"
           >
             New company
           </Link>

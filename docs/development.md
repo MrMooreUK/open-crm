@@ -58,11 +58,13 @@ Prefer **Server Actions** in `lib/actions/*` for form posts. Revalidate the affe
 
 Use `components/data-table/*` for entity lists so filters, columns, and bulk delete stay consistent. Wire bulk delete via `makeBulkDeleteAction` + a `deleteMany(ids)` server action.
 
-### UI
+### UI & brand
 
-- Minimalist, light mode, zinc palette  
-- Dense tables and short copy  
-- Prefer existing `components/ui/*` primitives  
+- **Minimal chrome**, zinc neutrals, teal brand for primary actions and identity  
+- Tokens in `app/globals.css` (`brand`, `brand-subtle`, …)  
+- Logo: `BrandMark` / `BrandWordmark`  
+- Prefer `components/ui/*` primitives  
+- Full notes: [ui.md](./ui.md)  
 
 ### Auth
 
@@ -81,6 +83,8 @@ npm run typecheck
 npm run lint
 npm run build
 ```
+
+Update docs when you change user-facing behaviour, env vars, or install steps.
 
 ## Debugging tips
 

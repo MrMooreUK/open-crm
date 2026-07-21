@@ -7,6 +7,7 @@ import { ProfileForm } from "@/components/account/profile-form";
 import { PasswordForm } from "@/components/account/password-form";
 import { SessionsPanel } from "@/components/account/sessions-panel";
 import { PageHeader } from "@/components/ui/page-header";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   Card,
   CardContent,
@@ -15,13 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-  return `${parts[0]![0] ?? ""}${parts[parts.length - 1]![0] ?? ""}`.toUpperCase();
-}
 
 export default async function AccountPage() {
   const { organization } = await requireMembership();
@@ -44,18 +38,11 @@ export default async function AccountPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              {ctx.user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={ctx.user.image}
-                  alt=""
-                  className="h-12 w-12 rounded-full border border-zinc-200 object-cover"
-                />
-              ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white">
-                  {initials(ctx.user.name)}
-                </div>
-              )}
+              <UserAvatar
+                name={ctx.user.name}
+                image={ctx.user.image}
+                size="xl"
+              />
               <div className="min-w-0">
                 <CardTitle className="text-base">{ctx.user.name}</CardTitle>
                 <CardDescription className="truncate">

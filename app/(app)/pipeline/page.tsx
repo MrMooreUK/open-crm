@@ -27,7 +27,7 @@ export default async function PipelinePage() {
         actions={
           <Link
             href="/deals/new"
-            className="inline-flex h-8 items-center rounded-md bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
+            className="btn-primary btn-primary-sm"
           >
             New deal
           </Link>

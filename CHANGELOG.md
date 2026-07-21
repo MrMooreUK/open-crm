@@ -16,18 +16,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Organization settings** split under sidebar accordion: profile, branding, regional, team
 - **Org branding** — logo upload, company address/tax/footer for quotes
 - **User account** (`/account`) — profile photo upload, email/name, password, sessions
+- **Default avatar** (`/default-avatar.svg`) when no photo is set
+- **Header profile photo** next to name (links to account)
 - **Notifications** — red badge + bell for enquiries in status `new`
 - **Data tables** — filters, column visibility/reorder, bulk select & delete (all main lists)
 - **Company → contact cascade** on deal/enquiry/quote forms
 - **Pipeline assignee avatars** on Kanban cards
+- **Deal stage breadcrumb** — full stage trail on deal detail (Pipeline → stages)
+- **Teal brand identity** — CSS tokens, logo mark, primary buttons, nav accents
 - Type-to-search pickers for company/contact/enquiry/deal/service
-- Expanded documentation and security self-host notes
+- Expanded documentation (`docs/ui.md`, install/security/architecture updates)
 
 ### Security
 
 - Session required to access `/uploads/*` (logos, avatars)
 - Compose binds Postgres to `127.0.0.1` by default
 - Stricter `.gitignore` for env files, keys, and user uploads
+
+### Changed
+
+- Primary CTAs use brand teal instead of pure zinc black
+- Auth screens use branded gradient backdrop
 
 ## [0.1.0] — 2026-07-21
 

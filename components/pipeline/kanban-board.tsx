@@ -118,7 +118,7 @@ function StageColumn({
       ref={setNodeRef}
       className={cn(
         "flex w-64 shrink-0 flex-col rounded-lg border border-zinc-200 bg-zinc-50/80",
-        isOver && "ring-2 ring-zinc-300"
+        isOver && "ring-2 ring-brand/30 border-brand/30"
       )}
     >
       <div className="border-b border-zinc-200 px-3 py-2">

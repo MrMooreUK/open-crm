@@ -4,16 +4,10 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { removeAvatar, uploadAvatar } from "@/lib/actions/account";
+import { userAvatarSrc } from "@/lib/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Trash2, Upload } from "lucide-react";
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-  return `${parts[0]![0] ?? ""}${parts[parts.length - 1]![0] ?? ""}`.toUpperCase();
-}
 
 export function AvatarUpload({
   imageUrl,
@@ -27,7 +21,8 @@ export function AvatarUpload({
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const displayUrl = preview || imageUrl;
+  const displayUrl = preview || userAvatarSrc(imageUrl);
+  const hasCustom = Boolean(preview || imageUrl);
 
   async function onFile(file: File | null) {
     if (!file) return;
@@ -75,24 +70,18 @@ export function AvatarUpload({
       <div>
         <Label>Profile photo</Label>
         <p className="mt-0.5 text-xs text-zinc-400">
-          PNG, JPEG, or WebP · max 2 MB
+          PNG, JPEG, or WebP · max 2 MB. Default image used when empty.
         </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-zinc-50">
-          {displayUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={displayUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <span className="text-lg font-semibold text-zinc-400">
-              {initials(userName)}
-            </span>
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={displayUrl}
+            alt={`${userName} profile photo`}
+            className="h-full w-full object-cover"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -113,7 +102,7 @@ export function AvatarUpload({
             <Upload className="h-3.5 w-3.5" />
             {loading
               ? "Uploading…"
-              : displayUrl
+              : hasCustom
                 ? "Replace photo"
                 : "Upload photo"}
           </Button>

@@ -42,6 +42,7 @@ We welcome good-faith research. Do not:
 | Multi-tenancy | CRM queries scoped by `organization_id` via `requireMembership()` |
 | Secrets | Environment variables only — never commit `.env` |
 | Uploads | Stored under `public/uploads` (gitignored); **session required** to fetch |
+| Default avatar | Public static `/default-avatar.svg` only (no private user data) |
 | Health | `/api/health` is unauthenticated and returns only ok/down — no secrets |
 | Dependencies | CI on pull requests |
 

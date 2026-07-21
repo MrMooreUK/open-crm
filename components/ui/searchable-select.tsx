@@ -89,7 +89,7 @@ export function SearchableSelect({
       <div
         className={cn(
           "flex h-9 items-center gap-2 rounded-md border border-zinc-200 bg-white px-2.5 shadow-sm transition-colors",
-          open && "ring-2 ring-zinc-400",
+          open && "ring-2 ring-brand/35 border-brand/40",
           disabled && "opacity-50"
         )}
       >

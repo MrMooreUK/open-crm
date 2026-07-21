@@ -13,7 +13,7 @@ Browser
   → PostgreSQL
 ```
 
-Why a monolith for v0.1:
+Why a monolith for v0.1+:
 
 - One Docker image, one deploy  
 - Shared types and Zod schemas  
@@ -59,10 +59,13 @@ Every CRM query must be scoped by `organizationId` from `requireMembership()`.
 | `app/api/*` | Health, auth, onboarding, v1 |
 | `components/*` | Feature UI + primitives |
 | `components/data-table/*` | Shared lists (filters, columns, bulk actions) |
+| `components/ui/*` | Brand mark, buttons, inputs, avatars |
 | `lib/db/*` | Schema, client, migrations |
 | `lib/actions/*` | Server actions (mutations + queries) |
 | `lib/auth.ts` | Better Auth server config |
+| `lib/avatar.ts` | Default avatar helper |
 | `middleware.ts` | Session cookie gate for protected routes (incl. `/uploads`) |
+| `app/globals.css` | Brand CSS tokens + base styles |
 
 ## Auth flow
 
@@ -81,9 +84,14 @@ Sensitive account ops (password change, session revoke) go through Better Auth /
 
 ## UI patterns
 
-- **Data tables** — search, column filters, visible columns, drag reorder (prefs in `localStorage`), bulk select/delete  
-- **Searchable selects** — type-to-search companies/contacts/etc.; contacts filter by selected company  
-- **Notifications** — count of enquiries with status `new` (header bell + nav badges)  
+See also [ui.md](./ui.md).
+
+- **Brand** — teal primary (`brand` tokens); zinc neutrals  
+- **Data tables** — search, filters, columns, bulk select/delete  
+- **Searchable selects** — type-to-search; contacts filter by selected company  
+- **Notifications** — enquiries with status `new` (header + nav)  
+- **Avatars** — uploads or `/default-avatar.svg`; header + pipeline  
+- **Deal stage breadcrumb** — full stage trail on deal detail  
 
 ## Pipeline
 
@@ -91,7 +99,7 @@ Default stages on org create:
 
 `Lead → Qualified → Proposal → Negotiation → Won | Lost`
 
-Deal stage moves update `deals.stage_id` (Kanban uses `@dnd-kit`). Cards show assignee avatars when set.
+Deal stage moves update `deals.stage_id` (Kanban uses `@dnd-kit`). Cards show assignee avatars when set. Deal detail shows a stage breadcrumb/trail.
 
 ## Uploads
 
@@ -100,6 +108,7 @@ Logos and avatars are stored under `public/uploads/` (Docker volume in Compose).
 - Filenames are scoped by user/org id  
 - Middleware requires a **session cookie** to fetch `/uploads/*` (not world-readable)  
 - User content is **gitignored** and must never be committed  
+- Default avatar is a **static** public asset: `/default-avatar.svg` (not under `/uploads`)
 
 ## Deploy shape
 

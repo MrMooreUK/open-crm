@@ -207,7 +207,7 @@ export function QuickAddContactButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-9 items-center rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white hover:bg-zinc-800"
+        className="btn-primary"
       >
         {label}
       </button>

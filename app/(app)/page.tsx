@@ -127,7 +127,8 @@ export default async function DashboardPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <Card>
+    <Card className="overflow-hidden">
+      <div className="h-0.5 bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-400" />
       <CardContent className="pt-4">
         <div className="text-xs font-medium uppercase tracking-wide text-zinc-500">
           {label}

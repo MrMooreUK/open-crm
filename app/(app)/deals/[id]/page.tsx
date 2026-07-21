@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DealForm } from "@/components/deals/deal-form";
+import { DealStageBreadcrumb } from "@/components/deals/deal-stage-breadcrumb";
 import { DeleteDealButton } from "@/components/deals/delete-deal-button";
 import { ActivityTimeline } from "@/components/activities/activity-timeline";
 import {
@@ -73,7 +74,7 @@ export default async function DealDetailPage({
     <div>
       <PageHeader
         title={deal.title}
-        description={`${formatCurrency(deal.amountCents, deal.currency, organization.locale)} · ${deal.stage.name}${deal.owner ? ` · ${deal.owner.name}` : ""}`}
+        description={`${formatCurrency(deal.amountCents, deal.currency, organization.locale)}${deal.owner ? ` · ${deal.owner.name}` : ""}`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge
@@ -82,7 +83,7 @@ export default async function DealDetailPage({
                   ? "success"
                   : deal.stage.isLost
                     ? "danger"
-                    : "secondary"
+                    : "brand"
               }
             >
               {deal.stage.name}
@@ -91,7 +92,7 @@ export default async function DealDetailPage({
               href={`/quotes/new?dealId=${deal.id}${
                 deal.companyId ? `&companyId=${deal.companyId}` : ""
               }${deal.contactId ? `&contactId=${deal.contactId}` : ""}`}
-              className="inline-flex h-8 items-center rounded-md bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
+              className="btn-primary btn-primary-sm"
             >
               New quote
             </Link>
@@ -99,6 +100,19 @@ export default async function DealDetailPage({
           </div>
         }
       />
+
+      {stages.length > 0 ? (
+        <DealStageBreadcrumb
+          stages={stages.map((s) => ({
+            id: s.id,
+            name: s.name,
+            isWon: s.isWon,
+            isLost: s.isLost,
+          }))}
+          currentStageId={deal.stageId}
+          pipelineName={pipeline?.name ?? "Pipeline"}
+        />
+      ) : null}
 
       <RelatedContext items={chips} />
 

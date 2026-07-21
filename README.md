@@ -31,24 +31,26 @@ Built for **founders, sales pods, and agencies** (roughly 1–50 people).
 - **Enquiries** — inbound requests, status workflow, teammate assignment
 - **Quotes** — line items, tax, service catalog, print/PDF
 - **Services** — reusable priced offerings for one-click quote lines
-- **Deals & pipeline** — list view + Kanban with drag-and-drop; assignee avatars
+- **Deals & pipeline** — list + Kanban drag-and-drop; assignee avatars; stage breadcrumb on deal detail
 - **Activities & tasks** — notes, calls, emails, meetings; open-task list
 - **Data tables** — filters, column show/hide/reorder, bulk select & delete
 - **Company → contact filtering** — pick a company, only see its people
 - **Search & dashboard** — global search; pipeline value and recent activity
 - **Notifications** — red badge when new enquiries need attention
-- **Account settings** — profile photo upload, password, active sessions
+- **Account settings** — profile photo (with default avatar), password, sessions
 - **Organization settings** — profile, branding/logo, regional defaults, team invites
+- **Brand UI** — restrained teal identity, dense zinc chrome
 - **One-command install** — Docker Compose (app + Postgres)
 
-### Roadmap (near term)
+### Docs & roadmap
 
-- Webhooks & API tokens  
-- Custom fields  
-- Basic automation rules  
-- Deeper reporting  
-
-See [docs/roadmap.md](./docs/roadmap.md). Contact I/O: [docs/contacts-import-export.md](./docs/contacts-import-export.md).
+| Doc | Topic |
+|-----|--------|
+| [docs/roadmap.md](./docs/roadmap.md) | Shipped vs planned |
+| [docs/ui.md](./docs/ui.md) | Brand & UI patterns |
+| [docs/contacts-import-export.md](./docs/contacts-import-export.md) | Contact I/O |
+| [docs/enquiries-quotes.md](./docs/enquiries-quotes.md) | Enquiries & quotes |
+| [docs/](./docs/README.md) | Full documentation index |
 
 ---
 
